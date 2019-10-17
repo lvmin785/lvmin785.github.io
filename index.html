@@ -80,12 +80,12 @@
 
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="LvMinB-log">
+<meta property="og:title" content="LvMin-Blog">
 <meta property="og:url" content="blog.shenzihao.top/index.html">
-<meta property="og:site_name" content="LvMinB-log">
+<meta property="og:site_name" content="LvMin-Blog">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LvMinB-log">
+<meta name="twitter:title" content="LvMin-Blog">
 
 
 
@@ -121,7 +121,7 @@
 
 
 
-  <title>LvMinB-log</title>
+  <title>LvMin-Blog</title>
   
 
 
@@ -152,7 +152,7 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">LvMinB-log</span>
+        <span class="site-title">LvMin-Blog</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -271,7 +271,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux常用命令/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-四/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -289,7 +289,7 @@
      </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMinB-log">
+      <meta itemprop="name" content="LvMin-Blog">
     </span>
 
     
@@ -299,7 +299,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/17/Linux常用命令/" itemprop="url">Linux常用命令</a></h1>
+                <a class="post-title-link" href="/2019/10/17/Linux-四/" itemprop="url">Linux(四)</a></h1>
         
 
         <div class="post-meta">
@@ -311,7 +311,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:02:59+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:38+08:00">
                 2019-10-17
               </time>
             
@@ -382,7 +382,822 @@
       
         
           
-            <h2 id="linux常用命令"><a href="#linux常用命令" class="headerlink" title="linux常用命令"></a>linux常用命令</h2><p><strong>SHELL</strong></p>
+            <h1 id="程序安装及管理"><a href="#程序安装及管理" class="headerlink" title="程序安装及管理"></a><strong>程序安装及管理</strong></h1><p><strong>一、应用程序基础</strong></p>
+<p>将软件传到LINUX中</p>
+<p>yum install lrzsz</p>
+<p>（注意：LINUX要能连入互联网，ping <a href="http://www.qq.com" target="_blank" rel="noopener">www.qq.com）</a>/)</p>
+<p><strong>应用程序与系统命令的关系</strong></p>
+<p><strong>文件位置</strong></p>
+<p>系统命令：一般在/bin和/sbin目录中，或为Shell内部指令</p>
+<p>应用程序：通常在/usr/bin和/usr/sbin目录中</p>
+<p><strong>主要用途</strong></p>
+<p>系统命令：完成对系统的基本管理工作，例如IP配置工具</p>
+<p>应用程序：完成相对独立的其他辅助任务，例如网页浏览器</p>
+<p><strong>适用环境</strong></p>
+<p>系统命令：一般只在字符操作界面中运行</p>
+<p>应用程序：根据实际需要，有些程序可在图形界面中运行</p>
+<p><strong>运行格式</strong></p>
+<p>系统命令：一般包括命令字、命令选项和命令参数</p>
+<p>应用程序：通常没有固定的执行格式</p>
+<p><strong>典型应用程序的目录结构</strong></p>
+<p>文件类型 保存目录</p>
+<p>普通执行程序文件 /usr/bin</p>
+<p>服务器执行程序文件和管理程序文件 /usr/sbin</p>
+<p>应用程序配置文件 /etc</p>
+<p>日志文件 /var/log</p>
+<p>应用程序文档文件 /usr/share/doc</p>
+<p>应用程序手册页文件 /usr/share/man</p>
+<p><strong>常见的软件包封装类型</strong></p>
+<p>文件类型 保存目录</p>
+<p>rpm软件包 扩展名为“.rpm”</p>
+<p>deb软件包 扩展名为“.deb”</p>
+<p>源代码软件包 一般为“.tar.gz”、“.tar.bz2”等格式的压缩包，包含程序的原始代码</p>
+<p>绿色免安装的软件包 在压缩包内提供已编译好的执行程序文——解开压缩包后的文件即可直接使用</p>
+<p><strong>Centos软件包管理</strong></p>
+<p><strong>rpm软件包</strong></p>
+<p>RPM</p>
+<p>Redhat Package Manager</p>
+<p>由 Red Hat 公司提出，被众多 Linux 发行版所采用</p>
+<p>建立统一的数据库文件</p>
+<p>详细记录软件包安装、卸载等变化信息</p>
+<p>自动分析软件包依赖关系</p>
+<p>RPM 软件包</p>
+<p>软件素材参考：<a href="http://www.rpm.org/" target="_blank" rel="noopener">http://www.rpm.org</a></p>
+<p><strong>一般命名格式：</strong></p>
+<p><strong>查询已安装的 RPM 软件信息</strong></p>
+<p><strong>rpm -q[子选项] [软件名]</strong></p>
+<p><strong>常用选项</strong></p>
+<p>-qa、-qi、 -ql、 -qf、-qc、-qd</p>
+<p>Rpm –qa查询所有安装的rpm软件包</p>
+<p>Rpm –qi 查询已安装的某软件包的信息</p>
+<p>Rpm –ql查询已安装的某软件包安装路径</p>
+<p>查询未安装的 RPM 软件包文件中信息</p>
+<p>rpm - qp[子选项] RPM包文件</p>
+<p>常用选项</p>
+<p>-qpi、-qpl、-qpc、-qpd</p>
+<p>使用rpm 命令只能查询通过 RPM方式安装的软件包信息用，其他途径安装到系统中的软件包，rpm 命令将无法获取相关信息</p>
+<p><strong>安装或升级RPM 软件</strong></p>
+<p>rpm [选项] RPM包文件 …</p>
+<p>-i :在当前系统中安装一个新的RPM软件包</p>
+<p>-e:卸载指定名称的软件包</p>
+<p>-U:检查并升级系统中的某个软件包,若该软件包原来并未安装,曾等同于”-i”选项</p>
+<p>-F:检查并更新系统中的某个软件包,若该软件包原来并未安装,则放弃安装</p>
+<p>-h:在安装或升级软件包的过程中,以”#”号显示安装进度</p>
+<p>-v:显示软件安装过程中的详细信息</p>
+<p>–force:强制安装某个软件包,当需要替换已安装的软件包及文件,或者安装一个比当前使用的软件版本更旧的软件时,可以使用此选项</p>
+<p>–nodeps:在安装或升级,卸载一个软件包时,不检查与其他软件包的依赖关系</p>
+<p><strong>常用选项</strong></p>
+<p>-i、 -U、 -F</p>
+<p>安装 升级 强制</p>
+<p>-vh显示安装进度</p>
+<p>rpm -ivh 软件包</p>
+<p>卸载指定的RPM软件</p>
+<p>rpm -e 软件名</p>
+<p><strong>辅助选项</strong></p>
+<p>–force、–nodeps、-h、-v、</p>
+<p><strong>重建RPM 数据库</strong></p>
+<p>[root@localhost ~]# rpm –rebuilddb</p>
+<p>或</p>
+<p>[root@localhost ~]# rpm –initdb</p>
+<p><strong>导入验证公钥</strong></p>
+<p>root@localhost ~]# rpm –import /media/cdrom/RPM-GPG-KEY-redhat-release</p>
+<p><strong>解决软件包依赖关系方法</strong></p>
+<p>安装有依赖关系的多个软件</p>
+<p>卸载有依赖关系的多个软件</p>
+<p>忽略依赖关系</p>
+<p>结合“–nodeps”选项，但可能导致软件异常</p>
+<p><strong>源代码编译概述</strong></p>
+<p>使用源代码安装软件的优点</p>
+<p>获得最新的软件版本，及时修复bug</p>
+<p>根据用户需要，灵活定制软件功能</p>
+<p><strong>应用场合举例</strong></p>
+<p>安装较新版本的应用程序时</p>
+<p>当前安装的程序无法满足需要时</p>
+<p>需要为应用程序添加新的功能时</p>
+<p>源代码编译过程</p>
+<p><strong>二、YUM安装软件</strong></p>
+<p>YUM，Yellow dog Updater Modified</p>
+<p>基于RPM包构建的软件更新机制</p>
+<p>可以自动解决依赖关系</p>
+<p>所有软件包由集中的YUM软件仓库提供</p>
+<p><strong>软件仓库的提供方式</strong></p>
+<p>FTP服务：ftp://……</p>
+<p>HTTP服务：http://……</p>
+<p>本地目录：file:///…….</p>
+<p><strong>RPM软件包的来源</strong></p>
+<p>CentOS发布的RPM包集合</p>
+<p>第三方组织发布的RPM包集合</p>
+<p>用户自定义的RPM包集合</p>
+<p><strong>构建CentOS 7 软件仓库</strong></p>
+<p>RPM包来自CentOS 7 DVD光盘</p>
+<p>通过FTP、HTTP或本地目录提供给客户机</p>
+<p>在软件仓库中加入非官方RPM包组</p>
+<p>包括存在依赖关系的所有RPM包</p>
+<p>使用createrepo工具建立仓库数据文件</p>
+<p><strong>YUM缓存目录</strong></p>
+<p>存放下载的软件包、仓库信息等数据</p>
+<p>位于/var/cache/yum/$basearch/$releasever</p>
+<p>[root@localhost ~]# yum clean all</p>
+<p><strong>为客户机指定YUM仓库位置</strong></p>
+<p>配置文件：/etc/yum.repos.d/*.repo</p>
+<p>[root@localhost ~]# vi /etc/yum.repos.d/centos7.repo</p>
+<p>[base]</p>
+<p>name=CentOS 7.5</p>
+<p>baseurl=<a href="ftp://192.168.4.254/centos7" target="_blank" rel="noopener">ftp://192.168.4.254/centos7</a></p>
+<p>enabled=1</p>
+<p>gpgcheck=1</p>
+<p>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</p>
+<p>[other]</p>
+<p>name=Other RPM Packages</p>
+<p>baseurl=<a href="ftp://192.168.4.254/other" target="_blank" rel="noopener">ftp://192.168.4.254/other</a></p>
+<p>enabled=1</p>
+<p>gpgcheck=0</p>
+<p><strong>直接以CentOS 7 光盘作软件仓库</strong></p>
+<ol>
+<li>将CentOS 7 光盘放入光驱</li>
+<li>指定仓库位置，URL地址为 file:///media/cdrom</li>
+</ol>
+<p>[root@localhost ~]# vi /etc/yum.repos.d/local.repo</p>
+<p>……</p>
+<p>[local]</p>
+<p>name=CnetOS 7.3</p>
+<p>baseurl=file:///media/cdrom</p>
+<p>enabled=1</p>
+<p>gpgcheck=0</p>
+<p><strong>关于yum命令</strong></p>
+<p>由软件包yum-3.4.3-150.el7.centos.noarch提供</p>
+<p>用来访问YUM仓库，查询、下载及安装、卸载软件包</p>
+<p><strong>yum的配置文件</strong></p>
+<p>基本设置：/etc/yum.conf</p>
+<p>仓库设置：/etc/yum.repos.d/*.repo</p>
+<p>日志文件：/var/log/yum.log</p>
+<p><strong>查询软件包</strong></p>
+<p>yum list [软件名]…</p>
+<p>yum info [软件名]…</p>
+<p>yum search &lt;关键词&gt;…</p>
+<p><strong>查询软件包组</strong></p>
+<p>yum grouplist [包组名]…</p>
+<p>yum groupinfo &lt;包组名&gt;…</p>
+<p><strong>安装软件</strong></p>
+<p>yum install [软件名]</p>
+<p>yum groupinstall &lt;包组名&gt;</p>
+<p><strong>升级软件</strong></p>
+<p>yum update</p>
+<p>yum groupupdate</p>
+<p><strong>卸载软件</strong></p>
+<p>yum remove &lt;软件名&gt;…</p>
+<p>yum groupremove &lt;包组名&gt;…</p>
+<p><strong>yum安装:</strong></p>
+<ol>
+<li>yum源配置文件所在位置:/etc/yum.repos.d/</li>
+</ol>
+<p>注意:此目录下有许多.repo的配置文件,可以全部移走,然后自己创建一个XXX.repo的源文件</p>
+<ol>
+<li>编辑XXX.repo的源文件</li>
+</ol>
+<p>编辑内容:</p>
+<ol>
+<li>[名字] ——-自定义</li>
+<li>Baseurl=file:///media ——定义yum源仓库为光驱的挂载点</li>
+<li>enabled=1 ——-0 :关闭源 1表示开启源</li>
+<li>Gpgcheck=0 ——0:不去校验包 1:校验包 效率低</li>
+<li>保存退出</li>
+<li>安装命令</li>
+</ol>
+<p>Yum install 包名</p>
+<p><strong>源码包安装:（需要gcc）</strong></p>
+<ol>
+<li>下载源码包</li>
+<li>解压源码包</li>
+</ol>
+<p>tar zxvf 软件名.tar.gz -C /解压目录 ——–解压压缩文件到指定目录里面</p>
+<ol>
+<li>配置</li>
+</ol>
+<p>./configure –prefix=/软件放置目录 ——-重新配置软件安装后文件存放的位置</p>
+<ol>
+<li>编译</li>
+</ol>
+<p>Make ———重新编译二进制</p>
+<ol>
+<li>编译安装</li>
+</ol>
+<p>Make install ——–编译安装</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-三/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/17/Linux-三/" itemprop="url">Linux(三)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:29+08:00">
+                2019-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h1><p><strong>一、文件内容查看</strong></p>
+<p>查看文件内容 cat 命令</p>
+<p><strong>cat命令</strong></p>
+<p>用途：显示出文件的内容</p>
+<p>cat [选项] 文件名 …</p>
+<p>cat –n 文件名</p>
+<p>显示文件内容同时显示行号</p>
+<p><strong>more命令</strong></p>
+<p>用途：全屏方式分页显示文件内容</p>
+<p>交互操作方法</p>
+<p>按Enter键向下逐行滚动</p>
+<p>按空格键向下翻一屏</p>
+<p>按q键退出</p>
+<p>Ctrl+f 下翻 Ctrl+b上翻</p>
+<p>more [选项] 文件名 …</p>
+<p><strong>less 命令</strong></p>
+<p>用途：与 more 命令相同，但扩展功能更多</p>
+<p>交互操作方法</p>
+<p>Page Up 向上翻页，Page Down 向下翻页</p>
+<p>按“/”键查找内容，“n”下一个内容，“N”上一个内容</p>
+<p>其他功能与 more 命令基本类似</p>
+<p>less [选项] 文件名 …</p>
+<p><strong>tail命令</strong></p>
+<p>用途：查看文件结尾的少部分内容（默认为10行）</p>
+<p>tail -n 文件名 …</p>
+<p>显示尾部指定行数</p>
+<p>tail -f 文件名：动态观察文件变化</p>
+<p><strong>wc命令</strong></p>
+<p>用途：统计文件中的单词数量（Word Count）等信息</p>
+<p>常用命令选项</p>
+<p>-l：统计行数</p>
+<p>-w：统计单词个数</p>
+<p>-c：统计字节数</p>
+<p>wc [选项]… 目标文件…</p>
+<p>wc -l /etc/passwd</p>
+<p>wc -l /var/log/secure</p>
+<p><strong>grep命令（支持正则表达式）</strong></p>
+<p>用途：在文件中查找并显示包含指定字符串的行</p>
+<p>常用命令选项</p>
+<p>-i：查找时忽略大小写</p>
+<p>-v：反转查找，输出与查找条件不相符的行</p>
+<p>查找条件设置</p>
+<p>要查找的字符串以双引号括起来</p>
+<p>“^……”表示以……开头，“……$”表示以……结尾</p>
+<p>“^$”表示空行</p>
+<p>grep [选项]… 查找条件 目标文件</p>
+<p>例如：grep -v “^#” /etc/yum.conf | grep -v “^$”</p>
+<p>Grep “^root” /etc/passwd</p>
+<p><strong>二、压缩命令gzip、bzip2</strong></p>
+<p><strong>gzip命令、bzip2命令</strong></p>
+<p>用途：制作压缩文件、解开压缩文件</p>
+<p>常用命令选项</p>
+<p>-9、-d</p>
+<p>gzip [-9] 文件名… ——gzip工具压缩文件</p>
+<p>bzip2 [-9] 文件名…—–bzip2工具压缩文件</p>
+<p>gzip -d .gz格式的压缩文件 ——gzip工具解压文件</p>
+<p>bzip2 -d .bz2格式的压缩文件——bzip2工具解压文件</p>
+<p>请注意：</p>
+<p>gzip和bzip2命令使用的压缩算法各不相同</p>
+<p>一般来说bzip2的压缩效率要好一些</p>
+<p>gunzip 命令</p>
+<p>gunzip 等价于 gzip –d</p>
+<p>gzip -d mkfile.gz</p>
+<p>或</p>
+<p>gunzip mkfile.gz</p>
+<p>bunzip2 命令</p>
+<p>bzip2和bunzip2命令的用法与gzip、gunzip命令基本相同</p>
+<p><strong>tar命令</strong></p>
+<p>用途：制作归档文件、释放归档文件</p>
+<p>tar [选项] … 归档文件名 源文件或目录</p>
+<p>tar [选项]… 归档文件名 [-C 目标目录]</p>
+<p>常用命令选项</p>
+<p>-c、-x、-v、-f、-p、-t、 -C、-z、-j</p>
+<p>-c:创建.tar格式包文件</p>
+<p>-C:解压时指定释放的目标文件夹</p>
+<p>-f:表示使用归档</p>
+<p>-j:调用bzip2程序进行压缩或是解压</p>
+<p>-p:打包时保留文件及目录的权限</p>
+<p>-P:打包时保留文件及目录的绝对路径</p>
+<p>-t:列表查看包内的文件</p>
+<p>-v:输出详细信息</p>
+<p>-x:解压tar格式的包文件</p>
+<p>-z:调用gzip程序进行压缩或是解压</p>
+<p>压缩归档:</p>
+<p>Tar zcvf 自定义压缩后的文件名.tar.gz 压缩的对象</p>
+<p>Tar jcvf 自定义压缩后的文件名.tar.bzip2 压缩的 对象</p>
+<p>解压:</p>
+<p>Tar zxfv 压缩文件.tar.gz -C 解压后存放的目录</p>
+<p>Tar jxvf 压缩文件.tar.bzip2 -C 解压后存放的目录</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/17/Linux-二/" itemprop="url">Linux(二)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:20+08:00">
+                2019-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="文本编辑器-vi-命令"><a href="#文本编辑器-vi-命令" class="headerlink" title="文本编辑器 vi 命令"></a>文本编辑器 vi 命令</h1><p><strong>一、文件内容编辑</strong></p>
+<p><strong>文本编辑器的作用</strong></p>
+<p>创建或修改文本文件</p>
+<p>维护 Linux 系统中的各种配置文件</p>
+<p><strong>Linux中最常用的文本编辑器</strong></p>
+<p>vi：类UNIX操作系统的默认文本编辑器。</p>
+<p>vim：vim是vi文本编辑器（一般简称为vi编辑器）的增强版本</p>
+<p>vi vim</p>
+<p><strong>三种工作模式</strong></p>
+<p>命令模式、输入模式、末行模式</p>
+<p>不同模式之间的切换</p>
+<p>I插入式</p>
+<p>a追加式</p>
+<p>o插入新行后进行编辑</p>
+<p><strong>命令模式的基本操作</strong></p>
+<p>光标移动</p>
+<p>复制、粘贴、删除</p>
+<p>文件内容查找</p>
+<p>撤销编辑及保存退出</p>
+<p><strong>末行模式的基本操作</strong></p>
+<p>保存文件及退出vi编辑器</p>
+<p>打开新文件或读入其他文件内容</p>
+<p>文件内容替换</p>
+<p>vim kernel.txt</p>
+<p>(1)====&gt;命令模式:可以显示行号(:set nu ),可以查找信息(/word).支持上下左右键;</p>
+<p>跳到行首^</p>
+<p>跳到行尾$</p>
+<p>跳到文档最开始:gg</p>
+<p>跳到文档结尾:G</p>
+<p>跳到某一行:10 //跳到第10行.</p>
+<p>yy //复制光标所在行</p>
+<p>p //粘贴到光标所在行的下一行</p>
+<p>dd //删除光标所在行</p>
+<p>5yy //复制光标所在行开始向下的一共5行</p>
+<p>d^ //删除光标所在行到行首</p>
+<p>d$ //删除光标所在行到行尾</p>
+<p>u //撤销操作</p>
+<p>(2)====&gt;命令模式=====&gt;进入编辑模式:i</p>
+<p>(3)====&gt;命令模式=====&gt;进入编辑模式:i======&gt;末行模式Esc</p>
+<p>:wq //保存并退出</p>
+<p>:q! //强制退出,不保存</p>
+<p>:set nu //显示行号</p>
+<p>/10 //查找文档中包含”10”的内容,跳转到下一个用n</p>
+<p>:w /test/test11/aaa.txt //把文件另存为aaa.txt</p>
+<p>:s/old/new/ //把光标所在行第一个old”替换为”new</p>
+<p>:s/old/new/g //把光标所在行所有的old”替换为”new</p>
+<p>:% s/old/new/g //把所有行的old”替换为”new</p>
+<p>:1,2 s/old/new/g //把第一行和第二行的old字符替换为new=====&gt;需要先执行set nu</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/17/Linux-一/" itemprop="url">Linux(一)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:03+08:00">
+                2019-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="linux命令"><a href="#linux命令" class="headerlink" title="linux命令"></a>linux命令</h1><p><strong>SHELL</strong></p>
 <p>文件位于/bin/bash</p>
 <p>cat /etc/shells常见的linuxshell有sh、bash、csh、tcsh、ash 其中bash shell是linux默认的shell</p>
 <p>查看系统默认shell命令 echo $SHELL</p>
@@ -639,178 +1454,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/09/12/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="吕敏">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/1.jpg">
-    </span>
-
-     <span title="Words count in article">
-      字
-     </span>
-
-        ...
-     <span title="Reading time">
-      分钟
-     </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMinB-log">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/12/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-12T15:25:26+08:00">
-                2019-09-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time </span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -859,7 +1502,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -872,7 +1515,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">tags</span>
                 
               </div>
