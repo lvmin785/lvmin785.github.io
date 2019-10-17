@@ -271,7 +271,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/15/xss/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux常用命令/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -299,7 +299,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/15/xss/" itemprop="url">xss</a></h1>
+                <a class="post-title-link" href="/2019/10/17/Linux常用命令/" itemprop="url">Linux常用命令</a></h1>
         
 
         <div class="post-meta">
@@ -311,8 +311,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-15T21:20:18+08:00">
-                2019-10-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:02:59+08:00">
+                2019-10-17
               </time>
             
 
@@ -382,7 +382,229 @@
       
         
           
-            
+            <h2 id="linux常用命令"><a href="#linux常用命令" class="headerlink" title="linux常用命令"></a>linux常用命令</h2><p><strong>SHELL</strong></p>
+<p>文件位于/bin/bash</p>
+<p>cat /etc/shells常见的linuxshell有sh、bash、csh、tcsh、ash 其中bash shell是linux默认的shell</p>
+<p>查看系统默认shell命令 echo $SHELL</p>
+<p><strong>LINUX命令分类</strong></p>
+<p><strong>内部命令</strong></p>
+<p>集成于 Shell 解释器程序内部的一些特殊指令，也称为内建（Built-in）指令</p>
+<p>属于 Shell 的一部分</p>
+<p>没有单独对应的系统文件</p>
+<p>自动载入内存，可以直接使用</p>
+<p><strong>外部命令</strong></p>
+<p>Linux系统中能够完成特定功能的脚本文件或二进制程序</p>
+<p>属于 Shell 解释器程序之外的命令</p>
+<p>每个外部命令对应了系统中的一个文件</p>
+<p>必须知道其对应的文件位置，由 Shell 加载后才能执行</p>
+<p>注意Linux系统将存在外部命令、程序的目录默认添加到“搜索路径”中 当前使用位于这些目录中的外部命令时，用户不需要指定具体的位置。</p>
+<p>Echo $PATH</p>
+<p><strong>通用的命令行使用格式</strong></p>
+<p>命令字 【选项】 【参数】</p>
+<p><strong>命令字</strong></p>
+<p>是整条命令中最关键的一部分</p>
+<p>唯一确定一条命令</p>
+<p><strong>注意：</strong></p>
+<p>Linux命令环境中，对英文字符的处理是区分大小写的</p>
+<p><strong>选项</strong></p>
+<p>短格式选项：使用“-”符号引导</p>
+<p>多个单字符选项可以组合在一起使用 —-ls -a ls -l ls -al</p>
+<p>长格式选项：使用“–”符号引导</p>
+<p><strong>参数</strong></p>
+<p>命令字的处理对象</p>
+<p>可以是文件名、目录（路径）名或用户名等内容</p>
+<p>个数可以是零到多个</p>
+<p>编辑 Linux 命令行的辅助操作</p>
+<p><strong>Tab 键</strong></p>
+<p>反斜杠“\” —如果输入一行命令内容过长,终端会自动换行,也可以通过插入反斜杠\强制换行</p>
+<p>Ctrl＋U 快捷键 ——-快速删除光标之前的所有字符内容</p>
+<p>Ctrl＋K 快捷键—–快速删除从点前光标处到行尾的所有字符</p>
+<p>Ctrl＋L 快捷键—–快速清空屏幕显示</p>
+<p>Ctrl＋C 快捷键—-取消当前命令</p>
+<p><strong>如何获得命令帮助</strong></p>
+<p><strong>问题</strong></p>
+<p>如何能快速、正确使用命令完成操作？</p>
+<p><strong>取得帮助方法</strong></p>
+<p>使用help 命令</p>
+<p>Help pwd</p>
+<p>使用“–help”选项</p>
+<p>使用man 手册页 (pageup pagedown翻页 q退出)</p>
+<p>help:大多数GNU工具都有–help 选项，用来显示工具的一些信息，用法</p>
+<p>man:–(manual)显示系统的手册页,也就是查看帮助文档，如果系统没有文档，是不会显示这些帮助信息的，比help要详细</p>
+<p>info:是一个基于菜单的超文本系统，是由GNU项目开发并由Linux发布，包括一些关于Linux Shell，工具，GNU项目开发程序说明文档,不但显示一些选项，还会有一些范例</p>
+<p>注:一般man用的比较多，比help细，比info简单</p>
+<p><strong>目录和文件基本操作</strong></p>
+<p>pwd 命令</p>
+<p>cd 命令</p>
+<p>ls 命令</p>
+<p>du 命令</p>
+<p><strong>显示当前的工作目录</strong></p>
+<p>Pwd</p>
+<p><strong>将用户的工作目录更改到其他位置</strong></p>
+<p><strong>格式</strong></p>
+<p>cd 目标位置</p>
+<p>cd ~</p>
+<p>cd</p>
+<p>cd -</p>
+<p><strong>说明</strong></p>
+<p>切换到目标位置</p>
+<p>若不指定目标位置，切换到当前用户的宿主目录</p>
+<p>切换到上一次执行 cd 命令之前所在的目录</p>
+<p><strong>目录操作</strong></p>
+<p>绝对目录：从根目录开始的路径表示方式</p>
+<p>相对目录：从当前目录开始的路径表示方式</p>
+<p>示例：cd .. 相对路径表示法进入上级目录。</p>
+<p><strong>显示目录中内容，包括子目录和文件相关属性信息</strong></p>
+<p>ls [选项] [文件或目录… ]</p>
+<p>ls –l</p>
+<p><strong>标志</strong></p>
+<p>d代表目录</p>
+<p>-代表文件</p>
+<p>l代表链接</p>
+<p>ls –a 连同显示隐藏文件，以.开头的文件或目录</p>
+<p>ls –d 显示目录本身的信息</p>
+<p>ls –h 以友好的表示方式显示信息</p>
+<p><strong>常用选项</strong></p>
+<p>-l 、 -a 、 -A 、 -d 、 -h 、 -g 、 –color</p>
+<p><strong>结合通配符</strong></p>
+<p>“?”：匹配文件名中的一个未知字符</p>
+<p>“*”：匹配文件名中的任意多个字符</p>
+<p>ls –color —在字符模式中颜色区分文件类型</p>
+<p>深蓝色—-目录</p>
+<p>白色——-文件</p>
+<p>绿色—-可执行文件</p>
+<p>黄色—设备文件</p>
+<p>红色——压缩文件</p>
+<p><strong>通过别名机制简化常用的、比较长的命令</strong></p>
+<p>alias 命令别名 = 命令</p>
+<p><strong>设置myls 为ls – alh 的别名</strong></p>
+<p>alias myls = ‘ls – alh’</p>
+<p>永久保存定义别名的方式</p>
+<p>编辑 ~/.bashrc —–个人配置文件</p>
+<p>/etc/bashrc —–全局配置文件</p>
+<p>alias la=’ls -a -l’</p>
+<p><strong>统计指定目录（或文件）所占用磁盘空间的大小</strong></p>
+<p><strong>du [选项] [文件或目录… ]</strong></p>
+<p>选项</p>
+<p>-a</p>
+<p>-h</p>
+<p>-s</p>
+<p>示例</p>
+<p>统计磁盘空间占用时包括所有的文件，而不仅仅只统计目录</p>
+<p>显示出目录或文件的大小（K、M），默认的大小单位为字节（KB）</p>
+<p>只统计每个参数所占用空间总的大小，而不是统计每个子目录、文件的大小</p>
+<p>df –h显示剩余磁盘空间</p>
+<p><strong>mkdir 创建新的空目录</strong></p>
+<p><strong>rmdir 删除一个目录</strong></p>
+<p><strong>mkdir [选项] 目录位置及名称</strong></p>
+<p>-p：一次性创建嵌套的多层目录</p>
+<p>Rmdir删除子目录时，必须是空的。</p>
+<p><strong>创建空文件 – touch</strong></p>
+<p>更新文件的时间标记</p>
+<p>经常用于创建多个新的空文件</p>
+<p>touch 文件…</p>
+<p><strong>创建链接文件 – ln</strong></p>
+<p>为文件或目录建立链接文件</p>
+<p>文件类型</p>
+<p><strong>软链接，又称符号链接（理解为快捷方式）</strong></p>
+<p><strong>硬链接ln [-s] 源文件或目录… 链接文件或目标位置</strong></p>
+<p> 软链接-s 硬链接</p>
+<p>删除原始文件后 失效 仍旧可用</p>
+<p>使用范围 适用于文件或目录 只可用于文件</p>
+<p>保存位置 与原始文件可以位于不同的文件系统中 必须与原始文件在同一个文件系统（如一个Linux分区）内</p>
+<p><strong>取消软链接</strong></p>
+<p>Unlink 链接名</p>
+<p>如：unlink aa1.txt</p>
+<p>查找指定inode号的硬链接文件</p>
+<p>ll –i</p>
+<p>find / -inum 16810953</p>
+<p><strong>将需要复制的文件或目录（源）重建一份，并保存为新的文件或目录</strong></p>
+<p><strong>cp [选项]… 源文件或目录… 目标文件或目录…</strong></p>
+<p>选项 说明</p>
+<p>-f 覆盖目标同名文件或目录时不进行提醒，直接强制复制</p>
+<p>-i 覆盖目标同名文件或目录时提醒用户确认</p>
+<p>-p 复制时保持源文件的权限、属主及时间标记等属性不变</p>
+<p>-r 复制目录时必须使用此选项，表示递归复制所有文件及子目录</p>
+<p>注意：</p>
+<p>复制多个文件或目录时，目标位置必须是目录，且目标目录必须已存在</p>
+<p>复制文件的样式</p>
+<p>Cp 文件名 子目录中</p>
+<p>如：cd /root</p>
+<p>cp initial-setup-ks.cfg a1</p>
+<p>cp 文件名 新文件名</p>
+<p>在当前目录复制出一个新文件</p>
+<p>支持通配符*？</p>
+<p>复制一个目录及里面所有文件到另一个目录中</p>
+<p>Cp –r b3 b34</p>
+<p><strong>删除指定的文件或目录</strong></p>
+<p>rm [选项] 要删除的文件或目录…</p>
+<p><strong>常用选项</strong></p>
+<p>-f(强制)、-i（友好提示）、-r（连同子目录）</p>
+<p><strong>其中rf可以组合使用</strong></p>
+<p><strong>猜一猜：下面命令实现的功能</strong></p>
+<p>rm -rf public_html/grub/</p>
+<p>rm -i public_html/apg.conf</p>
+<p>注意：</p>
+<p>不要直接删除系统中已有的目录或配置文件，以避免出现意外故障</p>
+<p><strong>移动文件或目录mv</strong></p>
+<p>mv [选项] … 源文件或目录… 目标文件或目录</p>
+<p>将指定的文件或目录转移位置</p>
+<p>如果目标位置 与源位置相同，则相当于执行重命名操作</p>
+<p>mv mytouch mkfile</p>
+<p>mv mkfile public_html/</p>
+<p><strong>查找命令/文件存放目录</strong></p>
+<p>搜索范围由环境变量 PATH 决定（echo $PATH ）</p>
+<p>which 命令|程序名</p>
+<p>which -a 命令|程序名</p>
+<p><strong>查找文件或目录-find</strong></p>
+<p>采用递归方式，根据目标的名称、类型、大小等不同属性进行精细查找</p>
+<p>find [查找范围] [查找条件表达式]</p>
+<p>查找类型 关键字 说明</p>
+<p>按名称查找 -name 根据目标文件的名称进行查找，允许使用“<em>”及“?”通配符</em></p>
+<p><em>find / -name “</em>.txt” -print #在当前目录中中查.txt文件并显示</p>
+<p>find . -name “[A-Z]*” -print #在当前目录中查以大写字母开头的文件并显示</p>
+<p>按文件大小查找 -size 根据目标文件的大小进行查找</p>
+<p>一般使用“＋”、“-”号设置超过或小于指定的大小作为查找条件</p>
+<p>常用的容量单位包括 kB（注意 k 是小写）、M、G</p>
+<p>find . -type f -empty #查找大小为0的文件或空目录</p>
+<p>find . -type f -size +1000000c -print #查长度大于1Mb的文件</p>
+<p>find . -type f -size +2k#搜索当前目录下大于2KB的文件</p>
+<p>按文件属主查找 -user 根据文件是否属于目标用户进行查找</p>
+<p>按文件类型查找 - type 根据文件的类型进行查找</p>
+<p>文件类型包括普通文件（f）、目录（d）、块设备文件（b）、字符设备文件（c）等 块设备是指成块读取数据的设备（如硬盘、内存等），字符设备是指按单个字符读取数据的设备（如键盘、鼠标等）</p>
+<p>find . -type d -print #只列出当前目录所有的子目录</p>
+<p>find . ! -type d -print #只列出当前目录的非子目录（文件）</p>
+<p>find . -type f -print #只列出当前目录所有的文件</p>
+<p>find . -type l -print #只列出当前目录的所有符号链接</p>
+<p>find . -type c -print #只列出当前目录的所有字符设备</p>
+<p>find . -type b -print #只列出当前目录的所有块设备</p>
+<p>find . -type s -print #只列出当前目录的所有套接字</p>
+<p>find . -type p -print #只列出当前目录的所有Fifo</p>
+<p>扩展 Xargs find . -type d -empty | xargs rmdir #删除当前目录下所有空文件夹</p>
+<p>find . -type f -empty | xargs rm -rf递归查找当前目录及子目录下所有空文件并删除，rm 的 -r参数表示递归，-f表示强制删除</p>
+<p>find . -name “*.txt” | xargs rm -rf #查找当前目录下所有.txt文件并删除</p>
+<p>例如：</p>
+<p>find . -type f -atime +10 -name “<em>.txt” -exec cp {} /data ; #找到10天前访问的.txt文件并复制到/data目录中</em></p>
+<p><em>find . -perm -007 -exec ls -l {} ; #查所有用户都可读写执行的文件同-perm 777</em></p>
+<p><em>find . -type f -user root -exec chown ubuntu {} ; 　#将当前目录下所有root的文件改为属于ubuntu</em></p>
+<p><em>find /haha -name “grep.txt” -exec rm -rf {}</em></p>
+<p><em>find . -name ap</em> -o -name may* #查找以ap或may开头的文件</p>
+<p>find / -name “aa*.log” –ls</p>
+<p>find / -size +100M –ls</p>
+<p>find /etc -size -10k -ls</p>
+<p>find / -user abc -ls</p>
+<p>find /root/b35 -type f -ls</p>
+<p><strong>各表达式之间使用逻辑运算符</strong></p>
+<p>“-a”表示 而且（and）</p>
+<p>“-o”表示 或者（or）</p>
+<p>find /boot -size +1024k -a -name “vmlinuz<em>“</em></p>
+<p><em>find /boot -size +1024k -o -name “vmlinuz</em>“</p>
+<p><strong>知识梳理</strong></p>
+<p>查看及切换目录（pwd、cd、ls、du、df）</p>
+<p>创建目录和文件（mkdir、touch、ln）</p>
+<p>复制、删除、移动目录和文件（cp、rm、mv）</p>
+<p>查找目录和文件（which、find）</p>
+
           
         
       
@@ -645,6 +867,15 @@
 
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
             
 
           </nav>
