@@ -271,6 +271,285 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/24/网络基础二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/24/网络基础二/" itemprop="url">网络基础二</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T19:13:57+08:00">
+                2019-10-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-2-数据链路层"><a href="#1-2-数据链路层" class="headerlink" title="1.2 数据链路层"></a>1.2 数据链路层</h1><p>1.OSI七层模型：</p>
+<p>  （1）物理层：定义了终端设备的传输介质，传输的是bit流。</p>
+<p>  （2）数据链路层：把bit转换为数据帧，实现基于mac地址的寻址和转发</p>
+<p>  （3）网络层：把数据帧转换为数据包，实现基于IP地址的寻址和转发</p>
+<p>  （4）传输层：把数据包转换为数据段，为数据提供可靠或者不可靠的传输，为应用程序提供端到端的服务</p>
+<p>  （5）会话层：建立、维持和管理、终止会话</p>
+<p>  （6）表示层：数据的表现形式，比如压缩、加密、</p>
+<p>  （7）应用层：为用户提供服务。</p>
+<p>2.数据链路层：把bit转换为数据帧，实现基于mac地址的寻址和转发</p>
+<p>  （1）Mac地址：是由48 bit的二进制数组成，为了读写方便，用十六进制表示。</p>
+<p>​                其中前24bit表示厂商信息，后24位表示设备信息，由厂家自定义。</p>
+<p>​                mac地址是由厂家出厂的时候直接烧录到网卡里，一般情况下不能修改。</p>
+<p>  （2）Mac地址的分类：</p>
+<p>​                单播mac：如果一个Mac地址的第8bit是0，那么这个mac地址表示单播mac。</p>
+<p>​                组播mac：如果一个Mac地址的第8bit是1，那么这个mac地址表示组播mac。</p>
+<p>​                广播mac：全FF-FF-FF-FF-FF-FF</p>
+<p>  （3）数据帧格式：EthernetII数据帧</p>
+<p>​       二层数据帧最大1518Byte == 6Byte的Dmac+ 6Byte Smac+ 2Byte（Type字段：标识上层协议） + 数据Data（最大1500Byte） +4Byte（帧校验：FCS）</p>
+<p>3.交换机的工作原理：</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C09e38586875546599d71dc02864b7914%5Cclipboard.png" alt="img"></p>
+<p>4.真实设备连接：</p>
+<p>  （1）设备的console口————console线————PC的USB口</p>
+<p>  （2）在真机里安装USB-COM口的驱动</p>
+<p>  （3）计算机——管理——设备管理——端口，找到驱动起来的接口编号</p>
+<p>  （4）真机里安装远程管理的软件：Xshell/SecureCRT/Putty       </p>
+<p>5.交换机的组成：</p>
+<p>  （1）CPU：用于运算和控制</p>
+<p>  （2）ROM：Read  Only  Memory，只读存储，存储的系统的引导文件====》类似于引导分区</p>
+<p>  （3）RAM：Random Access Memory，随机存储，相当于内存====》running-config  </p>
+<p>  （4）Flash：闪存，用于存放IOS（路由器或者交换机的系统）系统，也可以存放用户数据。=====》类似于C盘。</p>
+<p>  （5）NVRAM：非易失性存储，为数据做永久存储。=====》类似于硬盘。</p>
+<p>6.交换机的常见模式：</p>
+<p>​    Switch&gt;en   //用户模式，只能使用一些简单的命令；不能查看当前配置。</p>
+<p>​    Switch#            //特权模式，可以使用比较多的查看命令。</p>
+<p>​    Switch#conf t        //全局配置模式，修改交换机的配置</p>
+<p>​    Enter configuration commands, one per line.  End with CNTL/Z.</p>
+<p>​    Switch(config)#</p>
+<p>​    退出模式：exit</p>
+<p>​    直接退到特权模式：end  == Ctrl + z </p>
+<p>​    快捷键：ctrl+a   移动到行首</p>
+<p>​            ctrl+e   移动到行尾</p>
+<p>​            ctrl+u   清空行</p>
+<p>​            Ctrl+shift+6   </p>
+<p>​    </p>
+<p>7.特权模式常用命令：</p>
+<p>  所有的show命令都可以在特权模式下直接使用；如果是其他模式，要加do。</p>
+<p>  （1）Switch#show ip interface brief  ==show  ip  int  bri   //查看所有接口的状态和配置</p>
+<p>  Status表示接口的物理状态，是否手动就行了修改；Protocol表示链路的协商状态是否正常。</p>
+<p>  说明：只有2个状态都是up的时候才是正常的。</p>
+<p>  Interface              IP-Address      OK? Method Status                Protocol</p>
+<p>​    FastEthernet0/1        unassigned      YES manual up                    up</p>
+<p> （2）show  int  f0/6     // 接口支持简写，fastethernet简写为f0/1 ;Ethernet简写为 e0/1;Gi 简写为g0/1;</p>
+<p>​       查看物理接口的双工和速率</p>
+<p>​      Full-duplex, 10Mb/s     //duplex表示双工模式，如果是Full表示全双工；如果是half表示半双工；如果是auto表示自适应。</p>
+<p> （3）修改接口的双工和速率</p>
+<p>​      enable  </p>
+<p>​      conf   t</p>
+<p>​      int   f0/1</p>
+<p>​      speed   10/100/auto        //修改接口的速率</p>
+<p>​      duplex  half/full/auto    //修改接口的双工模式</p>
+<p> （4）SW1#show   mac-address-table   //查看mac地址表，Type类型为Dynamic，表示交换机自己学到的。</p>
+<p>​      SW1#clear  mac-address-table    #清空mac地址表</p>
+<p> （5）其他命令：</p>
+<p>​    SW1#clock set 17:07:30 May 14 2019   #设置时间：时分秒，月日年</p>
+<p>​    SW1#show history    #查看命令历史</p>
+<p>​    SW1#show running-config    #查看交换机当前配置，还没有保存（重启就失效；只是写入了“内存”）(<strong>**</strong>)</p>
+<p>​    SW1#write            #保存配置</p>
+<p>​    Building configuration…</p>
+<p>​    [OK]</p>
+<p>​    SW1#copy running-config     startup-config    #把running里的配置保存到开机启动配置文件里</p>
+<p>​    SW1#show startup-config     #交换机每次开机的时候会自动加载的配置（重启仍然有效；写到了“硬盘”中，做永久存储）</p>
+<p>​    SW1#reload       #重启</p>
+<p>8.远程登录的配置：</p>
+<p>（1）设备管理——本地管理和远程管理（通过网络来管理设备，常用的方式有Telnet、SSH、远程桌面、远程协助、Team View等）</p>
+<p>（2）远程管理的步骤：</p>
+<p>​    第一步：给交换机配置IP</p>
+<p>​    SW1(config)#interface vlan 1    //进入虚拟接口；</p>
+<p>​    SW1(config-if)#ip address 192.168.1.100 255.255.255.0     //配置IP</p>
+<p>​    SW1(config-if)#no sh        //激活接口 no shutdown</p>
+<p>​    第二步：配置telnet</p>
+<p>​    SW1(config)#line vty 0 4    #0表示第1个虚拟接口；4表示最多允许登录人数</p>
+<p>​    SW1(config-line)#password 123456      #设置远程登录的密码</p>
+<p>​    SW1(config-line)#login     #激活</p>
+<p>​    第三步：进入特权模式的密码</p>
+<p>​    SW1(config)#enable password   123456 #password表示的明文密码</p>
+<p>​    SW1(config)#enable secret  123456     #secret表示密文的密码；如果两个都存在，那么密文生效</p>
+<p>（3）给console口做安全配置===》本地的安全</p>
+<p>​    SW1(config)#line console 0 </p>
+<p>​    SW1(config-line)#exec-timeout 0 0       #设置超时时间，第一个0表示分钟；第二个0表示s；0 0 表示永不超时（仅限于实验环境）</p>
+<p>​    SW1(config-line)#password console     #设置console的登录密码</p>
+<p>​    SW1(config-line)#logging synchronous    #设置光标跟随，不让命令被日志信息打断</p>
+<p>​    SW1(config-line)#login         #激活</p>
+<p>​    SW1(config)#no ip domain-lookup        #关闭域名解析</p>
+<p>​    SW1#erase startup-config          #清空所有配置</p>
+<p>（4）其他命令</p>
+<p>​    SW1(config)#do copy r s== do  write   #保存</p>
+<p>​    Switch#show version   #查看系统版本</p>
+<p>（5）ssh配置</p>
+<p>​    开启SSH（基于本地用户进行身份验证）：</p>
+<p>​    conf t </p>
+<p>​    hostname  SW1     //设置主机名</p>
+<p>​    username  test  password  密码   //设置登录的用户名和密码</p>
+<p>​    ip domain-name  <a href="http://www.test.com" target="_blank" rel="noopener">www.test.com</a>    //配置域名，域名用来生成公钥和私钥</p>
+<p>​    crypto  key  generate  rsa        //生成一对rsa算法的公钥和私钥</p>
+<p>​    line vty 0 4</p>
+<p>​    transport  input  ssh/all</p>
+<p>​    login local</p>
+<p>​    exit</p>
+<p>​    ssh -l  test  192.168.1.254   //在模拟PC上使用ssh连接设备</p>
+<p>=============================================================================</p>
+<p>destination  目标</p>
+<p>Source       源</p>
+<p>Current     当前</p>
+<p>configuration    配置</p>
+<p>Status           状态         </p>
+<p>Protocol        协议</p>
+<p>Dynamic     动态</p>
+<p>minutes    分钟</p>
+<p>seconds    秒</p>
+<p>generate    生成</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/18/网络基础一/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1867,7 +2146,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1880,7 +2159,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">tags</span>
                 
               </div>
