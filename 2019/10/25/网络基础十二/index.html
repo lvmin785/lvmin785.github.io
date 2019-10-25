@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ACL和NAT及ftp主被动模式,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.12ACL和NAT及ftp主被动模式1.子网划分：   使用200.1.1.0/24在一条链路上，只使用2个IP，最佳的方案是怎么做？   2的m次方-2  &amp;gt;=2    =====&amp;gt; m&amp;gt;=2（子网中0的个数）   255.255.255.111111  00  ====&amp;gt;  255.255.255.252 （1）以太网链路上的二层封装：EthernetII和802.">
+<meta name="keywords" content="ACL和NAT及ftp主被动模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络基础十二">
+<meta property="og:url" content="blog.shenzihao.top/2019/10/25/网络基础十二/index.html">
+<meta property="og:site_name" content="LvMin-Blog">
+<meta property="og:description" content="1.12ACL和NAT及ftp主被动模式1.子网划分：   使用200.1.1.0/24在一条链路上，只使用2个IP，最佳的方案是怎么做？   2的m次方-2  &amp;gt;=2    =====&amp;gt; m&amp;gt;=2（子网中0的个数）   255.255.255.111111  00  ====&amp;gt;  255.255.255.252 （1）以太网链路上的二层封装：EthernetII和802.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5Caa51f215e9e140fa94e11135a7af4716%5Cnat%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C092e47792efe46ee9590c11aea418259%5Cftp%E7%9A%84%E4%B8%BB%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F.png">
+<meta property="og:updated_time" content="2019-10-25T07:14:53.234Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络基础十二">
+<meta name="twitter:description" content="1.12ACL和NAT及ftp主被动模式1.子网划分：   使用200.1.1.0/24在一条链路上，只使用2个IP，最佳的方案是怎么做？   2的m次方-2  &amp;gt;=2    =====&amp;gt; m&amp;gt;=2（子网中0的个数）   255.255.255.111111  00  ====&amp;gt;  255.255.255.252 （1）以太网链路上的二层封装：EthernetII和802.">
+<meta name="twitter:image" content="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5Caa51f215e9e140fa94e11135a7af4716%5Cnat%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="blog.shenzihao.top/2019/10/25/网络基础十二/">
+
+
+
+
+
+  <title>网络基础十二 | LvMin-Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LvMin-Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">网络安全</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网络基础十二</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:56:59+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-12ACL和NAT及ftp主被动模式"><a href="#1-12ACL和NAT及ftp主被动模式" class="headerlink" title="1.12ACL和NAT及ftp主被动模式"></a>1.12ACL和NAT及ftp主被动模式</h1><p>1.子网划分：</p>
+<p>  使用200.1.1.0/24在一条链路上，只使用2个IP，最佳的方案是怎么做？</p>
+<p>  2的m次方-2  &gt;=2    =====&gt; m&gt;=2（子网中0的个数）</p>
+<p>  255.255.255.111111  00  ====&gt;  255.255.255.252</p>
+<p>（1）以太网链路上的二层封装：EthernetII和802.3</p>
+<p>​     在以太链路上，子网掩码最多是30位。</p>
+<p>  (2）在公网上的二层封装是PPP（支持认证，标准协议），很多家庭用户接入使用的都是PPPOE拨</p>
+<p>​     号上网，只有用户名和密码都匹配完成才能上网。    </p>
+<p>​    如果在Serial串口链路上，子网最多可以是31位。</p>
+<p>​    在串行链路上，分为DCE和DTE</p>
+<p>​    DCE是data communicate equipment的意思，即数据通信设备,是ISP端，负责给客户端分配带</p>
+<p>​     宽。</p>
+<p>​    DTE是data terminal equipment的意思，即数据终端设备，是客户端。</p>
+<p>​    ISP端，需要给客户端分配带宽</p>
+<p>​    int  s0/2/0   (串口链路，此端口增加接口 WIC-2T)</p>
+<p>​    encapsulation  ppp     //设置接口封装格式为PPP</p>
+<p>​    ip  add  200.1.1.2   255.255.255.252    //配置接口IP</p>
+<p>​    clock  rate  2000000    //给客户端指定带宽是2M</p>
+<p>​    no  sh</p>
+<p>​    客户端：</p>
+<p>​    interface Serial0/3/0</p>
+<p>​        ip address 200.1.1.1 255.255.255.252</p>
+<p>​    encapsulation ppp</p>
+<p>​    no sh       </p>
+<p>（3）如果是回还口做测试，子网掩码最多是32位。</p>
+<p>​        <strong>***</strong>扩展： 配置回环口：</p>
+<p>​                            interface Loopback0</p>
+<p>​                            ip address 11.1.1.1 255.255.255.0</p>
+<p>1.扩展ACL：可以基于源目Ip、源目端口、协议来对数据流量做过滤。（编号100–199）</p>
+<p>​    举例1；定义一个ACL，编号为101，拒绝192.168.1.0/24 到达 192.168.2.2 的FTP服务</p>
+<p>​    Router(config)# access-list 101 deny tcp 192.168.1.0 0.0.0.255 host 192.168.2.2 eq 21   </p>
+<p>​    举例2：定义ACL101，拒绝192.168.1.0/24访问192.168.2.2的ICMP服务</p>
+<p>​    Router(config)# access-list  101  deny  icmp  192.168.1.0  0.0.0.255  host  192.168.2.2  </p>
+<p>​    举例3：允许或拒绝所有流量</p>
+<p>​    Router(config)# access-list 101 permit ip any any   //第一个any是源，第二个any是目标</p>
+<p>2.实验举例：</p>
+<p>​    R2(config)#access-list 100 permit tcp host 192.168.1.1 host 192.168.2.3 eq 80</p>
+<p>​    R2(config)#access-list 100 deny   ip host  192.168.1.1 host 192.168.2.3</p>
+<p>​    R2(config)#access-list 100 permit icmp host 192.168.1.1 host 192.168.2.1 </p>
+<p>​    R2(config)#access-list 100 deny   icmp host 192.168.1.1 host 192.168.2.2</p>
+<p>​    R2(config)#access-list 100 permit tcp host 192.168.1.2 host 12.1.1.2 eq telnet</p>
+<p>​    interface Serial0/2/0</p>
+<p>​    ip address 12.1.1.2 255.255.255.252           //配置IP</p>
+<p>​    encapsulation ppp                                   //设置封装格式</p>
+<p>​    ip access-group 100 in                                   //应用到接口</p>
+<p>​    clock rate 4000000                                       //设置时钟频率，给客户端分配的带宽</p>
+<p>​    检查命令：show   access-lists                          //检查ACL的匹配情况</p>
+<p>​    </p>
+<p>​    如果删除某条ACL，就要使用命名ACL的规则：</p>
+<p>​        全部删除：no access-list 100</p>
+<p>​        部分删除：</p>
+<p>​    R2(config)#ip access-list extended 100   //extended表示修改扩展ACL，编号为100</p>
+<p>​    R2(config-ext-nacl)#no 80            //删除ACL条目编号为80</p>
+<p>​    补充特殊的ACL：FTP的被动模式</p>
+<p>​    access-list 100 permit tcp host 192.168.1.2 host 192.168.2.3 eq ftp   //放行192.168.1.2到   </p>
+<p>​    192.168.2.3的TCP-21，FTP控制连接</p>
+<p>​    access-list 100 permit tcp host 192.168.1.2 host 192.168.2.3 range 1024 65535        //放行   </p>
+<p>​      数据连接，目标端口号为大于1024的范围</p>
+<p>​    远程登录配置：</p>
+<p>​    R2(config)#line vty 0 4                              #0表示第1个虚拟接口；4表示最多允许登录人数</p>
+<p>​    R2(config)#password 123456</p>
+<p>​    R2(config)#login</p>
+<p>​    ***R2(config)#enable password 123456   #password表示的明文密码</p>
+<p>​    ***R2(config)#enable secret  123456        #secret表示密文的密码；如果两个都存在，那么密文</p>
+<p>​    生效</p>
+<p>3.常见服务和端口的对应关系</p>
+<p>​    UDP服务：DHCP（udp-67,68）、DNS（udp-53）、NTP（udp-123，用于linux中的时间同  </p>
+<p>​     步），TFTP（udp-69）</p>
+<p>​    TCP服务：       </p>
+<p>​    FTP(tcp-21:建立连接 和 tcp-20:传输数据)</p>
+<p>​    http（tcp-80）；https（tcp-443）</p>
+<p>​    远程桌面RDP（tcp-3389）</p>
+<p>​    Telnet（tcp-23）</p>
+<p>​    MySQL（tcp-3306）</p>
+<p>​    ssh（tcp-22）</p>
+<p>​    SMTP（tcp-25）</p>
+<p>​    POP3（tcp-110）</p>
+<p>​    共享（tcp-445）</p>
+<p>1.NAT(Network  Address  Translation)：网络地址转换，用来把私网地址转换为公网地址。</p>
+<p>  NAT的作用：实现地址转换；实现内外网隔离；节约了IP地址；把IPV4转换为IPv6.</p>
+<p>2.NAT的工作原理：</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5Caa51f215e9e140fa94e11135a7af4716%5Cnat%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png" alt="img"></p>
+<p>3.NAT的配置步骤 ：</p>
+<p>  第一步：先定义内外网接口（R1是出口路由器）</p>
+<p>​    R1(config)#int f0/0</p>
+<p>​    R1(config-if)#ip nat inside   （内网接口）</p>
+<p>​    R1(config-if)#int f0/1</p>
+<p>​    R1(config-if)#ip nat outside （外网接口）</p>
+<p>  第二步：定义上网的网段</p>
+<p>​    R1(config)#access-list 10 permit 192.168.1.0 0.0.0.255（0为精准，1为模糊）</p>
+<p>  第三步：把私网地址转换为公网地址</p>
+<p>​    R1(config)#ip nat inside source list 10 interface f0/1 overload </p>
+<p>  检查命令： </p>
+<p>​    R1#show ip nat translations      //显示nat转换记录</p>
+<p>​    协议     公网地址          私网地址            公网的目标地址</p>
+<p>​    Pro      Inside global     Inside local       Outside local      Outside global</p>
+<p>​    icmp     12.1.1.1:33       192.168.1.1:33     34.1.1.2:33        34.1.1.2:33</p>
+<p>Destination host unreachable   //目标主机不可达，一般是路由问题；</p>
+<p>ftp主被动模式：</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C092e47792efe46ee9590c11aea418259%5Cftp%E7%9A%84%E4%B8%BB%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F.png" alt="img"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ACL和NAT及ftp主被动模式/" rel="tag"># ACL和NAT及ftp主被动模式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/25/网络基础十/" rel="next" title="网络基础十">
+                <i class="fa fa-chevron-left"></i> 网络基础十
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/25/网络基础十三/" rel="prev" title="网络基础十三">
+                网络基础十三 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/1.jpg" alt="吕敏">
+            
+              <p class="site-author-name" itemprop="name">吕敏</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-12ACL和NAT及ftp主被动模式"><span class="nav-number">1.</span> <span class="nav-text">1.12ACL和NAT及ftp主被动模式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">吕敏</span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

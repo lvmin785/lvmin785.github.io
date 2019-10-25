@@ -271,7 +271,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/24/网络基础六/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十八/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -299,7 +299,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/24/网络基础六/" itemprop="url">网络基础六</a></h1>
+                <a class="post-title-link" href="/2019/10/25/网络基础十八/" itemprop="url">网络基础十八</a></h1>
         
 
         <div class="post-meta">
@@ -311,8 +311,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T19:22:48+08:00">
-                2019-10-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:58:02+08:00">
+                2019-10-25
               </time>
             
 
@@ -382,8 +382,504 @@
       
         
           
-            <p>1.6IpsecVPN</p>
-<p>1.VPN：Virtaul Private  Network虚拟私有网络，实现内网之间的通信。</p>
+            <h1 id="1-18防火墙的一般配置步骤"><a href="#1-18防火墙的一般配置步骤" class="headerlink" title="1.18防火墙的一般配置步骤"></a>1.18防火墙的一般配置步骤</h1><p>1.防火墙的一般配置步骤：</p>
+<p>  （1）接口配置IP</p>
+<p>  （2）解决路由问题：内网的和外网的</p>
+<p>  （3）把接口划分到相应的区域里</p>
+<p>  （4）写策略（ACL）</p>
+<p>  （5）实现内网上网：NAT</p>
+<p>2.让内网可以访问外网服务器：在WAN的web服务器上搭建DNS+web</p>
+<p>  （1）先挂载光驱—我的电脑—点击光驱—安装可选的Windows组件—网络服务（DNS）—应用程序服务器（安装IIS）</p>
+<p>3.把内网服务器发布到公网上</p>
+<p>  （1）在内网服务器上搭建web服务器，<a href="http://www.lanou.com" target="_blank" rel="noopener">www.lanou.com</a></p>
+<p>  （2）在防火墙上做DNAT，把100.1.1.1:80转换为172.16.1.1:80</p>
+<p>  （3）写策略：允许任意的源访问————172.16.1.1:80</p>
+<p>4.综合实验步骤说明：</p>
+<p>  （1）先实现内网通信；</p>
+<p>  （2）实现外网通信；</p>
+<p>  （3）做NAT实现内网主机访问外网；===》实现上网</p>
+<p>  （4）实现IpsecVPN；===》不同私网之间的通信</p>
+<p>5.综合实验讲解</p>
+<p>  （1）二层交换机划分vlan：</p>
+<p>​          access：只能承载一个vlan，用于PC和交换机之间相连。</p>
+<p>​       trunk：一条物理链路承载多个vlan，用于设备之间的连接。</p>
+<p>​       vlan  10</p>
+<p>​       vlan 20</p>
+<p>​       int  f0/3</p>
+<p>​       switchport   mode access </p>
+<p>​       switchport   access  vlan  10</p>
+<p>​       int f0/4</p>
+<p>​       switchport   mode access </p>
+<p>​       switchport   access  vlan  20</p>
+<p>​       int range f0/1 - 2</p>
+<p>​       switchport   mode trunk </p>
+<p>​       </p>
+<p>​       2L-1#show int trunk       //检查trunk</p>
+<p>​        </p>
+<p>​       2L-1#show vlan  brief   //查看接口和vlan是否对应</p>
+<p>​        </p>
+<p>  （2）不同vlan之间的通信问题————单臂路由（源目Ip地址不变，二层mac地址被重写，标签置换）和三层交换机（一次路由，多次交换）</p>
+<p>​       三层交换机转发效率高：基于硬件做转发，基于数据流做转发。</p>
+<p>​       3L-1(config)#int f0/3</p>
+<p>​        3L-1(config-if)#switchport trunk encapsulation dot1q    //把交换机的接口做二层接口</p>
+<p>​        3L-1(config-if)#switchport mode trunk </p>
+<p>​    </p>
+<p>​        做三层的以太链路捆绑：</p>
+<p>​        3L-1(config)#int range f0/2,f0/4</p>
+<p>​        3L-1(config-if-range)#channel-group 1 mode on</p>
+<p>​        3L-1(config-if-range)#</p>
+<p>​        3L-1(config)#int port-channel 1</p>
+<p>​        3L-1(config-if)#no switchport </p>
+<p>​        3L-1(config-if)#ip add 192.168.50.1 255.255.255.0</p>
+<p>​        3L-1(config-if)#no sh</p>
+<p>​        3L-1(config)#int f0/1    //三层交换机的上联接口是3层链路</p>
+<p>​        3L-1(config-if)#no switchport </p>
+<p>​        3L-1(config-if)#ip add 192.168.30.2 255.255.255.0</p>
+<p>​        3L-1(config-if)#no sh</p>
+<p>​        </p>
+<p>​        3L-1作为vlan10的主，vlan20的备份；</p>
+<p>​        interface Vlan10</p>
+<p>​         ip address 192.168.10.200 255.255.255.0</p>
+<p>​         standby version 2</p>
+<p>​         standby 10 ip 192.168.10.254</p>
+<p>​         standby 10 preempt</p>
+<p>​         standby 10 priority 105</p>
+<p>​         standby 10 track FastEthernet0/1</p>
+<p>​         standby 10 track FastEthernet0/3</p>
+<p>​        !</p>
+<p>​        interface Vlan20</p>
+<p>​         ip address 192.168.20.200 255.255.255.0</p>
+<p>​         standby version 2</p>
+<p>​         standby 20 ip 192.168.20.254</p>
+<p>​        </p>
+<p>​         standby 20 preempt</p>
+<p>​         standby 20 track FastEthernet0/1</p>
+<p>​         standby 20 track FastEthernet0/3</p>
+<p>​        </p>
+<p>​        3L-2的HSRP配置；</p>
+<p>​        interface Vlan10</p>
+<p>​         ip address 192.168.10.200 255.255.255.0</p>
+<p>​         standby version 2</p>
+<p>​         standby 10 ip 192.168.10.254</p>
+<p>​         standby 10 preempt</p>
+<p>​         standby 10 track FastEthernet0/1</p>
+<p>​         standby 10 track FastEthernet0/3</p>
+<p>​        !</p>
+<p>​        interface Vlan20</p>
+<p>​         ip address 192.168.20.200 255.255.255.0</p>
+<p>​         standby version 2</p>
+<p>​         standby 20 ip 192.168.20.254</p>
+<p>​         standby 20 priority 105</p>
+<p>​         standby 20 preempt</p>
+<p>​         standby 20 track FastEthernet0/1</p>
+<p>​         standby 20 track FastEthernet0/3</p>
+<p>  （3）实现外网通信：</p>
+<p>​         router  ospf  110              //运营商的路由器配置ospf;出口路由器默认路由指向ISP。</p>
+<p>​         router-id  11.1.1.1</p>
+<p>​         network  13.1.1.0  0.0.0.255 area 0</p>
+<p>​         network  12.1.1.0  0.0.0.255 area 0</p>
+<p>​         network  61.1.1.0  0.0.0.255 area 0 </p>
+<p>  （4）在出口路由器配置NAT，实现内网主机的上网功能+————由于NAT流量优先，要在NAT流量里先拒绝VPN流量</p>
+<p>​        ip nat inside source list 100 interface FastEthernet1/0 overload</p>
+<p>​        access-list 100 deny ip 192.168.10.0 0.0.0.255 192.168.80.0 0.0.0.255</p>
+<p>​        access-list 100 deny ip 192.168.10.0 0.0.0.255 192.168.90.0 0.0.0.255</p>
+<p>​        access-list 100 deny ip 192.168.20.0 0.0.0.255 192.168.90.0 0.0.0.255</p>
+<p>​        access-list 100 deny ip 192.168.20.0 0.0.0.255 192.168.80.0 0.0.0.255</p>
+<p>​        access-list 100 permit ip 192.168.10.0 0.0.0.255 any</p>
+<p>​        access-list 100 permit ip 192.168.20.0 0.0.0.255 any</p>
+<p>  （5）IpsecVPN的配置：前提是先实现公网通信。</p>
+<p>​        第一步：实现公网通信；</p>
+<p>​        第二步：配置阶段1；</p>
+<p>​        crypto isakmp policy 10</p>
+<p>​         encr 3des</p>
+<p>​         authentication pre-share</p>
+<p>​         group 2</p>
+<p>​         crypto isakmp key test.123 address 71.1.1.2</p>
+<p>​        第三步：配置阶段2：</p>
+<p>​        crypto ipsec transform-set Beijing esp-3des esp-sha-hmac</p>
+<p>​        第四步：定义感兴趣流量；</p>
+<p>​        access-list 110 permit ip 192.168.10.0 0.0.0.255 192.168.80.0 0.0.0.255</p>
+<p>​        access-list 110 permit ip 192.168.10.0 0.0.0.255 192.168.90.0 0.0.0.255</p>
+<p>​        access-list 110 permit ip 192.168.20.0 0.0.0.255 192.168.80.0 0.0.0.255</p>
+<p>​        access-list 110 permit ip 192.168.20.0 0.0.0.255 192.168.90.0 0.0.0.255</p>
+<p>​        第五步：定义map，把第二、3/4步绑定到一起；</p>
+<p>​        crypto map BJ 10 ipsec-isakmp </p>
+<p>​         set peer 71.1.1.2</p>
+<p>​         set transform-set Beijing </p>
+<p>​         match address 110</p>
+<p>​        第六步：应用到接口</p>
+<p>​        interface FastEthernet1/0</p>
+<p>​         ip address 61.1.1.1 255.255.255.0</p>
+<p>​         ip nat outside</p>
+<p>​         duplex auto</p>
+<p>​         speed auto</p>
+<p>​         crypto map BJ</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十七/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/25/网络基础十七/" itemprop="url">网络基础十七</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:57:53+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-17防火墙"><a href="#1-17防火墙" class="headerlink" title="1.17防火墙"></a>1.17防火墙</h1><p>1.常见的安全设备；</p>
+<p>  （1）防火墙Firewall：实现区域隔离，实现对流量的控制</p>
+<p>  （2）上网行为管理：对用户的上网行为进行控制和管理；</p>
+<p>  （3）IDS：入侵检测系统，对进入内网的可疑流量进行检测和报警。==》门卫</p>
+<p>  （4）IPS：入侵防御系统，一旦发现可疑流量就会立即进行阻断，并记录日志。===》警察。</p>
+<p>  （5）WAF：Web Application Firewall，为服务器做攻击防护。</p>
+<p>2.防火墙基本概念</p>
+<p>​    吞吐量：在不丢包的情况下单位时间内通过的数据包数量 </p>
+<p>​    时延：数据包第一个比特进入防火墙到最后一比特从防火墙输出的时间间隔 </p>
+<p>​    丢包率：通过防火墙传送时所丢失数据包数量占所发送数据包的比率 </p>
+<p>​    并发连接数：防火墙能够同时处理的点对点连接的最大数目 </p>
+<p>​    新建连接数：在不丢包的情况下每秒可以建立的最大连接数</p>
+<p>3.防火墙的分类：软件防火墙和硬件防火墙。</p>
+<p>  （1）包过滤防火墙：可基于3层和4层数据做过滤。</p>
+<p>​           优点：转发效率高，但是管理麻烦；不能基于应用层数据做过滤。</p>
+<p>  （2）应用网关型防火墙：给用户所有的流量做代理，也叫做代理防火墙。</p>
+<p>​           特点：可以基于应用层数据做过滤，但是效率比较低；当网络流量过大时，容易产生性能瓶 颈。</p>
+<p>  （3）状态检测防火墙：可以基于数据访问的状态做记录（状态缓存），基于数据流做转发，后续报  </p>
+<p>​           文直接查缓存信息。</p>
+<p>​            特点：提高了转发效率，但是对应用层的数据检测不够深入。</p>
+<p>  （4）DPI：Deep Packet Inspection深度包监测防火墙。</p>
+<p>​          特点：可以高效的对应用层数据做监测。</p>
+<p>4.防火墙的部署方式；</p>
+<p>可以对数据做识别和控制</p>
+<p>  （1）透明模式：把防火墙当交换机用，优点是对现有的网络改动最小；缺点就是不够安全。</p>
+<p>  （2）路由模式：把防火墙当路由器用，优点是更加安全；但是对网络改动比较大。</p>
+<p>  （3）混杂模式：把防火墙有些接口当二层接口使用；有些接口当三层接口使用。</p>
+<p>只能对数据做识别，把日志发送给日志服务器。</p>
+<p>  （4）旁路模式：在核心交换机上开启端口镜像，把流量复制一份发送给“防火墙/上网行为”，由防火</p>
+<p>​       墙做流量识别，把日志发送出去。</p>
+<p>5.防火墙实验步骤：</p>
+<p>  （1）环境说明：</p>
+<p>​           XP：模拟Inside区域—VMNET1—192.168.1.0/24(windows)</p>
+<p>​       DMZ: 模拟内网的web服务器区域—VMNET2—172.16.1.0/24(server)</p>
+<p>​       Outside：模拟外网服务器区域—VMNET3—100.1.1.0/24(server</p>
+<p>  （2）准备多网卡的环境：</p>
+<p>​        在VMware中添加多个虚拟网卡：编辑————虚拟网络适配器</p>
+<p>​        在防火墙上，添加最少3块虚拟网卡，依次连接VMnet1、net2、net3.</p>
+<p>​        XP：模拟Inside区域，192.168.1.1—VMNET1—192.168.1.254/24</p>
+<p>​        DMZ: 模拟内网的web服务器区域,172.16.1.1—VMNET2—  172.16.1.254/24</p>
+<p>​                Outside：模拟外网服务器区域，100.1.1.2—VMNET3— 100.1.1.1/24</p>
+<p>  （3）在真机里开启VMNET1，并配置为192.168.1.0/24网段，测试网络连通性，并使用web界面来</p>
+<p>​            登录防火墙。</p>
+<p>​        <a href="https://192.168.1.254:8080/" target="_blank" rel="noopener">https://192.168.1.254:8080/</a></p>
+<p>​        superman / talent</p>
+<p>​        </p>
+<p>​        </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十六/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/25/网络基础十六/" itemprop="url">网络基础十六</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:57:44+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-16IpsecVPN"><a href="#1-16IpsecVPN" class="headerlink" title="1.16IpsecVPN"></a>1.16IpsecVPN</h1><p>1.VPN：Virtaul Private  Network虚拟私有网络，实现内网之间的通信。</p>
 <p>  私网之间的通信方式：</p>
 <p>​        专线，安全性高，但是成本比较高;</p>
 <p>​        租用链路；</p>
@@ -395,14 +891,14 @@
 <p>  （4）源认证；保障数据的发送和接收方都是合法的，</p>
 <p>3.常见的算法</p>
 <p>  （1）对称加密：加密和解密用的是同一把钥匙（算法）</p>
-<p>​          常见的对称加密算法：DES、3DES、AES</p>
-<p>​      特点：速度快，但是存在被窃听的危险。</p>
+<p>​           常见的对称加密算法：DES、3DES、AES</p>
+<p>​           特点：速度快，但是存在被窃听的危险。</p>
 <p>  （2）非对称加密：加密和解密用的不是一把钥匙，是一个秘钥对————公钥和私钥。</p>
 <p>​           基本传输方式：用公钥进行加密，用私钥来进行解密。</p>
-<p>​       非对称加密算法：DH算法和RSA（证书）</p>
-<p>​       特点：速度慢，但是更安全。</p>
+<p>​           非对称加密算法：DH算法和RSA（证书）</p>
+<p>​           特点：速度慢，但是更安全。</p>
 <p>  （3）哈希算法：校验数据的完整性，防止被篡改。</p>
-<p>​          常见算法：md5/sha/Hmac</p>
+<p>​            常见算法：md5/sha/Hmac</p>
 <p>4.IpsecVPN：</p>
 <p>  协商分为2个阶段：</p>
 <p>  第一阶段用来协商秘钥的安全性；使用的是isakmp协议叫做互联网秘钥交互协议。</p>
@@ -416,16 +912,16 @@
 <p>​       R1(config-isakmp)#hash    sha              //保证数据完整性，用的是sha</p>
 <p>​       R1(config-isakmp)#group 2            //使用非对称加密算法对秘钥进行二次加密</p>
 <p>​       R1(config)#crypto isakmp key test.123 address 45.1.1.2   //定义密码为test.123，指定对端</p>
-<p>​           的公网地址45.1.1.2</p>
+<p>​       的公网地址45.1.1.2</p>
 <p>  （3）第三步：定义第二阶段，保证数据的安全性</p>
 <p>​       R1(config)#crypto ipsec transform-set SET esp-3des esp-sha-hmac   //定义转换集，保证数</p>
-<p>​          据安全性，3des是用来加密的；sha是用来保证完整性的</p>
+<p>​       据安全性，3des是用来加密的；sha是用来保证完整性的</p>
 <p>​       R1(cfg-crypto-trans)#mode tunnel         //设置传输模式为隧道模式，默认配置</p>
 <p>  （4）第四步：定义感兴趣流量（对哪些流量进行加密，只有定义的感兴趣流量之间才能通信）       </p>
 <p>​       R1(config)#access-list 100 permit ip host 192.168.1.1 host 192.168.2.1   //允许192.168.1.1</p>
-<p>​           和192.168.2.1之间通信</p>
+<p>​        和192.168.2.1之间通信</p>
 <p>  （5）第五步：把第2/3/4步绑到一起</p>
-<p>​           R1(config)#crypto map VPN 10 ipsec-isakmp   //定义一个策略图，名称叫VPN，编号是10</p>
+<p>​       R1(config)#crypto map VPN 10 ipsec-isakmp   //定义一个策略图，名称叫VPN，编号是10</p>
 <p>​       R1(config-crypto-map)#match address 100         //匹配感兴趣流量</p>
 <p>​       R1(config-crypto-map)#set peer 45.1.1.2            //设置对端公网地址45.1.1.2</p>
 <p>​       R1(config-crypto-map)#set transform-set SET     //匹配转换集</p>
@@ -436,30 +932,33 @@
 <p>  （7）检查命令：</p>
 <p>​        R1#show crypto engine connections active  //查看加密和解密的数据包    </p>
 <p>  （8）后续需求：</p>
-<p>​           实现PC2和PC4之间的通信，修改ACL</p>
-<p>​       R1(config)#access-list 100 permit ip host 192.168.1.2 host 192.168.2.2   同时也要在对端添</p>
-<p>​          加 </p>
+<p>​        实现PC2和PC4之间的通信，修改ACL</p>
+<p>​        R1(config)#access-list 100 permit ip host 192.168.1.2 host 192.168.2.2   同时也要在对端添</p>
+<p>​         加 </p>
 <p>  （9）实现NAT</p>
-<p>​       R1(config)#access-list 110 deny ip 192.168.1.0 0.0.0.255 192.168.2.0 0.0.0.255        //在</p>
-<p>​           NAT流量里拒绝VPN流量，允许其他  </p>
+<p>​       //在  NAT流量里拒绝VPN流量，允许其他  </p>
+<p>​       R1(config)#access-list 110 deny ip 192.168.1.0 0.0.0.255 192.168.2.0 0.0.0.255        </p>
 <p>​       R1(config)#access-list 110 permit ip 192.168.1.0 0.0.0.255 any</p>
 <p>​       R1(config)#ip nat inside source list 110 interface f0/1 overload    //做NAT转换</p>
 <p>  （10）检查命令：  </p>
-<p>​           R1#show crypto isakmp policy        //查看一阶段的策略</p>
+<p>​       R1#show crypto isakmp policy        //查看一阶段的策略</p>
 <p>​       R1#show crypto isakmp sa         //SA叫做安全关联，是两个路由器协商完成后的策略存储方</p>
-<p>​           式</p>
+<p>​        式</p>
 <p>​        IPv4 Crypto ISAKMP SA</p>
 <p>​        dst             src             state          conn-id status       //Status状态是Active表示可用</p>
 <p>​        45.1.1.2        12.1.1.1        QM_IDLE           1001 ACTIVE</p>
+<p>​        </p>
 <p>​      R5#show  crypto isakmp key     //一阶段，查看秘钥</p>
-<p>​        Keyring      Hostname/Address                            Preshared Key</p>
-<p>​        default      12.1.1.1                                    test.123</p>
+<p>​      Keyring      Hostname/Address                            Preshared Key</p>
+<p>​      default      12.1.1.1                                    test.123</p>
 <p>​      R5#show crypto ipsec transform-set       //检查第二阶段的转换集（保证数据的可靠性）</p>
-<p>​        Transform set default: { esp-aes esp-sha-hmac  }    //default，默认策略</p>
-<p>​            will negotiate = { Transport,  }, </p>
-<p>​        Transform set shanghai: { esp-3des esp-sha-hmac  }   //自定义的shanghai策略</p>
-<p>​         will negotiate = { Tunnel,  }, </p>
+<p>​      Transform set default: { esp-aes esp-sha-hmac  }    //default，默认策略</p>
+<p>​      will negotiate = { Transport,  }, </p>
+<p>​    </p>
+<p>​    Transform set shanghai: { esp-3des esp-sha-hmac  }   //自定义的shanghai策略</p>
+<p>​      will negotiate = { Tunnel,  }, </p>
 <p>​      R5#show crypto ipsec sa    //查看第二阶段的sa（协商成功后的策略）</p>
+<p>​         </p>
 <p>​      R5#show crypto map    //查看map的内容</p>
 <pre><code>Crypto Map IPv4 &quot;SH&quot; 10 ipsec-isakmp              //map名字叫SH，编号为10 </code></pre><p>​                Peer = 12.1.1.1                //对端的公网Ip</p>
 <p>​                Extended IP access list 100            //感兴趣流量</p>
@@ -475,8 +974,6 @@
 <p>​      </p>
 <p>​                Interfaces using crypto map SH:   //map应用的接口</p>
 <p>​                FastEthernet0/0            </p>
-<p>authentication  pre-share 认证方式是预共享秘钥的方式</p>
-<p>encryption   加密 </p>
 
           
         
@@ -525,7 +1022,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/24/网络基础五/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十五/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -553,7 +1050,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/24/网络基础五/" itemprop="url">网络基础五</a></h1>
+                <a class="post-title-link" href="/2019/10/25/网络基础十五/" itemprop="url">网络基础十五</a></h1>
         
 
         <div class="post-meta">
@@ -565,8 +1062,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T19:22:36+08:00">
-                2019-10-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:57:35+08:00">
+                2019-10-25
               </time>
             
 
@@ -636,78 +1133,323 @@
       
         
           
-            <h1 id="1-5路由协议：静态路由协议和动态路由协议"><a href="#1-5路由协议：静态路由协议和动态路由协议" class="headerlink" title="1.5路由协议：静态路由协议和动态路由协议"></a>1.5路由协议：静态路由协议和动态路由协议</h1><p>1.路由协议：静态路由协议和动态路由协议。</p>
-<p>  （1）静态路由的基本格式：ip   route  目标网段  目标子网  下一跳</p>
-<p>  （2）默认路由：一般配置在出口路由器（边缘路由器：一边连接的LAN，一边连接WAN），所有不知道的数据包都交给“互联网中的下一跳”。</p>
-<p>​       ip   route   0.0.0.0   0.0.0.0   下一跳 </p>
-<p>  （3）路由的冗余问题：增加多链路</p>
-<p>​       负载均衡：多条链路同时进行数据传输，没有主备链路之分；如果一条down掉，另外一条还有“冗余”的功能。</p>
-<p>​       配置举例：</p>
-<p>​        R2(config)#ip route  192.168.2.0 255.255.255.0 13.0.0.2</p>
-<p>​        R2(config)#ip route  192.168.2.0 255.255.255.0 14.0.0.2</p>
-<p>​        R2(config)#do show ip route </p>
-<p>​        S    192.168.2.0/24 [1/0] via 13.0.0.2</p>
-<p>​                            [1/0] via 14.0.0.2</p>
-<p>​       浮动路由：多条链路中只有一条是主链路，其他都是备份链路；只有主链路发生故障，备份链路才会被启用。</p>
-<p>​         通过修改静态路由的优先级（管理距离），来决定哪条链路是主链路。</p>
-<p>​         优先级的范围是1——255，越小越优先。默认是1.</p>
-<p>​        R1(config)#ip route 0.0.0.0 0.0.0.0 192.168.3.2             //默认的优先级为1，默认是主链路</p>
-<p>​        R1(config)#ip route 0.0.0.0 0.0.0.0 192.168.30.2  10        //修改路由的优先级为10，成为备份链路</p>
-<p>​        R1#show ip route </p>
-<p>​        S*   0.0.0.0/0 [10/0] via 192.168.30.2         //默认情况下，只有一条链路负责转发数据；</p>
-<p>​        在路由表中，静态路由分为明细路由和默认路由；默认路由的优先级是最低的（其他所有的明细路由都没有匹配的时候，才会匹配默认路由）。</p>
-<p>  （5）在路由器上，开启回环口模拟PC，一般用来做测试。</p>
-<p>​        int   lo0</p>
-<p>​        ip    add   192.168.1.1   255.255.255.0</p>
-<p>​        no    sh    </p>
-<p>2.路由器的工作原理：mac地址是一个二层的概念，不能跨网段。</p>
-<p>源目Ip地址不变，源目mac地址被重写。</p>
-<p>3.传输层：把数据包转换为数据段，为数据提供可靠或不可靠的传输；为应用程序提供端到端的服务。</p>
-<p>  （1）可靠指TCP协议；不可靠指的是UDP协议。</p>
-<p>  （2）端是指端口（后门）</p>
-<p>​       netstat  -an    //查看本地开放的端口号和TCP的状态信息</p>
-<p>​         协议   本地地址               外部地址                  状态</p>
-<p>​         TCP    0.0.0.0:135            0.0.0.0:0              LISTENING     //监听状态，端口处于开放状态</p>
-<p>​         TCP    192.168.120.171:50093  23.46.220.16:443       ESTABLISHED   //表示TCP三次握手已经建立完成。</p>
-<p>​        LISTENING（listening）</p>
-<p>​        ESTABLISHED （三次握手建立完成）</p>
-<p>  （3）数据段：4层协议（TCp/UDP+端口号）+Data</p>
-<p>  （4）PDU（Protocol  Data Unit）：协议数据单元，数据在每一层传输的基本单位</p>
-<p>  （5）端口号的范围：0——65535，1——1024是知名端口</p>
-<pre><code>TCP23————Telnet，明文传输</code></pre><p>​        TCP22————SSH，加密传输</p>
-<p>​        TCP3389————远程桌面RDP服务</p>
-<p>​        TCP 21/20——————FTP（21是用来建立连接的，20是用来传输数据的）</p>
-<p>​        TCP80——————web服务器（http协议）；https（TCP443）</p>
-<p>​        TCP445————Windows的共享</p>
-<p>​        TCP25——————SMTP（简单邮件传输协议），用来发送邮件</p>
-<p>​        TCP110————POP3（邮局协议版本3），用来接收邮件</p>
-<p>​        TCP3306————MySQL服务</p>
-<p>​        UDP53——————DNS服务（如果是客户端请求服务器来解析的话，使用的是UDP-53；如果是DNS主备服务器之间做数据同步，使用的是TCP-53）</p>
-<p>​        UDP67,68————DHCP服务</p>
-<p>​        UDP123————NTP（网络时间协议），是Linux中用于同步时间的。</p>
-<p>4.TCP：是可靠的传输方式；所有的web页面都是基于TCP的。</p>
-<p>  （1）TCP传输数据之前，先建立连接的；</p>
-<p>  （2）TCP传输数据的时候，会给每个数据做一个编号（sequence 序列号），以保障数据的可靠性。</p>
-<p>  （3）TCP是全双工的协议，同一时间可以上传和下载。</p>
-<p>5.TCP的报文结构：</p>
-<p>  （1）第一列：源目端口号</p>
-<p>  （2）第二列：序列号（发送端给每个数据进行编号）</p>
-<p>  （3）第三列：确认号（用来对发送端的数据做确认）=====》保障数据传输的可靠性</p>
-<p>  （4）第四列：包含Flag位（标志位），用来描述这个报文的功能。</p>
-<p>​       SYN=1，表示想建立连接。</p>
-<p>​       ACK=1，表示报文是用来回复的。</p>
-<p>​       FIN=1，表示想拆除连接。</p>
-<p>6.基于TCP三次握手的攻击     </p>
-<p>  （1）SYN攻击：攻击者向服务器发送大量的“伪造请求报文”，服务器会向“假的请求者”去建立邻居关系；</p>
-<p>​           但实际上，这些“主机”根本没有请求服务器建立连接，导致服务器一直处于半连接状态。</p>
-<p>​     如果连接的数量过多，会导致服务器资源消耗严重，甚至死机。</p>
-<p>  （2）LAND攻击：攻击者伪造报文，让服务器自己和自己建立连接，导致服务器资源消耗严重。  </p>
-<p>7.UDP（User Datagram Protocol ）：用户数据报协议；是一种不可靠的传输协议。</p>
-<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C491da36ab1814f588b593e3e048fbb00%5Ctcp%E7%9A%84%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%96%AD%E5%BC%80%E8%BF%9E%E6%8E%A5.png" alt="img"></p>
-<p>标志位       SYN=1，表示想建立连接。</p>
-<p>​                  ACK=1，表示报文是用来回复的。</p>
-<p>​                  FIN=1，表示想拆除连接</p>
-<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C545e22a788de4b66a3142150c0b41629%5C%E6%95%B0%E6%8D%AE%E5%B0%81%E8%A3%85%E5%92%8C%E8%A7%A3%E5%B0%81%E8%A3%85%E8%BF%87%E7%A8%8B.png" alt="img"></p>
+            <h1 id="1-15OSPF"><a href="#1-15OSPF" class="headerlink" title="1.15OSPF"></a>1.15OSPF</h1><p>1.路由协议分类：</p>
+<p>  动态和静态</p>
+<p>​      AS：自治系统，根据路由协议是否工作在一个AS中，把路由协议分为IGP和EGP。（  划分AS  </p>
+<p>​               的原因：不同的路由协议有一个极限值；方便管理。）</p>
+<p>​      IGP：内部网关协议，同一个AS内部使用；</p>
+<p>​      EGP：外网网关协议，不同的AS之间通信。代表BGP。</p>
+<p>​      动态路由协议：</p>
+<p>​      距离矢量路由协议:rip,每个路由器没有全网拓扑，只能从邻居收到路由信息。（适用于小型</p>
+<p>​                网络）</p>
+<p>​        链路状态路由协议:ospf，is-is每个路由器都有全网拓扑，自己根据自己的数据库计算出来</p>
+<p>​                最优路径。</p>
+<p>2.OSPF的基本概念：是链路状态路由协议的典型代表，是公有协议；适用于大中型网络。</p>
+<p>  （1）OSPF（Open Shortest  Path First）开放式最短路径优先，每个路由器以自己为根会计算出来  </p>
+<p>​           一个“无环”的最优路径。</p>
+<p>​           组播地址：224.0.0.5和224.0.0.6</p>
+<p>​           ospf的管理距离（优先级）是110；rip的管理距离是120；</p>
+<p>​          hello时间是10s；dead时间是40s；</p>
+<p>​          更新：组播更新；</p>
+<p>​          支持VLSM（支持无类的路由协议）；</p>
+<p>​          支持认证；</p>
+<p>​          支持区域划分；</p>
+<p>  （2）OSPF的度量值为COST，参考带宽是100M。</p>
+<p>​            COST= 108/BW（b/s）</p>
+<p>​        最短路径是基于接口指定的代价（cost）计算的</p>
+<p>  （3）LSDB：链路状态数据库；</p>
+<p>​             LSA：链路状态通告（基本信息）  </p>
+<p>  （4）Router-id：路由器唯一标识，用来标识每个路由器的身份。</p>
+<p>​           选举规则：</p>
+<p>​           手工指定的优先级最高；</p>
+<p>​           回还口IP地址最大；</p>
+<p>​           物理接口Ip地址最大；</p>
+<p>3.OSPf中有3张表</p>
+<p>  （1）邻居表：通过发送hello，寻找网络中的其他邻居。</p>
+<p>  （2）链路状态数据库（LSDB：link State  Database）：交互LSA，形成LSDB。</p>
+<p>​            LSA（Link State Advertisement）：链路状态通告（路由的基本信息），描述每个路由器的基</p>
+<p>​            本接口信息、网络类型和IP地址等。</p>
+<p>  （3）路由表：使用的是SPF算法，根据LSDB中的信息计算最优路由。  </p>
+<p>5.OSPF的5种包：</p>
+<p>  （1）hello：发送hello，建立和维持邻居关系。</p>
+<p>  （2）DBD：Database Description数据库描述，类似于菜单/目录。</p>
+<p>  （3）LSR：Link State Request，链路状态请求，请求自己没有的LSA条目。===》点你喜欢吃的</p>
+<p>​           菜。</p>
+<p>  （4）LSU：Link State Update，链路状态更新，响应LSR。=====》服务员给你确认一下菜单</p>
+<p>  （5）LSACK：Link State Acknowledge，链路状态确认，响应LSR和LSU。    </p>
+<p>   说明：LSA不是一种数据包，而是数据包里的条目。（菜单里的某个菜名） </p>
+<p>7.OSPF的7种状态机：</p>
+<h2 id="邻居关系：只交互Hello"><a href="#邻居关系：只交互Hello" class="headerlink" title="邻居关系：只交互Hello"></a>邻居关系：只交互Hello</h2><p>  （1）Down状态：开始发送hello，但是没有发现网络中有任何其他路由器；或者接口直接处于故障</p>
+<p>​           状态。</p>
+<p>  （2）Init状态：从邻居收到了hello包，但是hello包中没有自己的Router-id。建立了单向的邻居关</p>
+<p>​           系。</p>
+<p>  （3）2-Way状态：从邻居收到的hello里，包含了自己的Router-id。</p>
+<h2 id="邻接关系：交互LSA"><a href="#邻接关系：交互LSA" class="headerlink" title="邻接关系：交互LSA"></a>邻接关系：交互LSA</h2><p>  （4）Exstart状态：交互DBD报文，用于选举主从（为了决定哪个路由器先发送DBD报文；一般只有</p>
+<p>​           3个包左右）</p>
+<p>  （5）Exchange；大量的DBD报文开始交互。====》翻菜单</p>
+<p>  （6）Loading：交互LSR、LSU、LSACK。====》LSR（你点菜），LSU（点菜宝），LSACK（报</p>
+<p>​          全部的菜名）</p>
+<p>  （7）Full：交互完成===》菜齐了。</p>
+<p>  8.ospf中划分区域的意义</p>
+<p>  （1）防止过多的LSA对硬件资源的消耗；</p>
+<p>  （2）在大型网络中，如果一条链路发生故障，会导致全网进行收敛。</p>
+<p>  （3）解决方法：进行区域划分</p>
+<p>​       区域ID：区域唯一标识，可以用十进制数表示；也可以用IP地址的形式表示。</p>
+<p>​       区域分为2大类：</p>
+<p>​       骨干区域，只有一个编号，就是area 0；非骨干区域之间通信，必须要经过骨干区域。</p>
+<p>​       非骨干区域，编号是任何的非0的区域。</p>
+<p>  9.ospf的基本配置：</p>
+<p>  （1）基本配置：</p>
+<p>​     router ospf 110    //110表示ospf的进程号，本地有效；不会影响邻居建立</p>
+<p>​     router-id 22.1.1.1        //指定路由器的唯一标识：Router-id </p>
+<p>​     network 22.1.1.0 0.0.0.255 area 0   //宣告自己的直连网段+反掩码（必须是连续的0或1）+区</p>
+<p>​     域ID</p>
+<p>​     network 23.1.1.0 0.0.0.255 area 0</p>
+<p>  （2）3张表：</p>
+<p>​     R2#show ip ospf neighbor    //邻居关系表</p>
+<p>​    邻居的Router-id    优先级  状态，full邻接  死亡时间    邻居的接口Ip   自己和邻接相连的接口</p>
+<p>​    Neighbor ID         Pri           State           Dead Time   Address         Interface</p>
+<p>​    33.1.1.1              1           FULL/DR         00:00:30    23.1.1.2        FastEthernet0/1</p>
+<p>  R2#show ip ospf database    //查看链路状态数据库</p>
+<p>  R2#show ip route    //如果是o开头的（域内路由）表示从同一个区域学到的路由条目；</p>
+<p>  //如果是O IA（域间路由）表示从其他区域学到的路由。</p>
+<p>  O        34.1.1.0 [110/2] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>​      44.0.0.0/32 is subnetted, 1 subnets</p>
+<p>  O        44.1.1.1 [110/3] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>​      45.0.0.0/24 is subnetted, 1 subnets</p>
+<p>  O IA     45.1.1.0 [110/3] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>​      55.0.0.0/32 is subnetted, 1 subnets</p>
+<p>  O IA     55.1.1.1 [110/4] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>10.OSPF中的网络类型：</p>
+<p>  point to Point：点到点，代表接口是Serial口</p>
+<p>  Broadcast Multi Access：广播型多路访问，代表接口是g0/0,f0/0,e0/0</p>
+<p>11.在MA网络中，为了避免过多的邻接关系和重复的路由信息传递，要在MA网络中选举DR和BDR。</p>
+<p>  （1）DR和BDR的选举依据：DR和BDR是基于接口的概念。一个路由器的不同接口可能属于不同的角色。</p>
+<p>​       先比较优先级；优先级范围是0～255，数值越大，优先级越高，默认为1</p>
+<p>​       比较Router-id（手工指定；回还口最大；物理接口Ip地址最大；）</p>
+<p>​       说明：如果接口的优先级为0，就表示这个接口不参与DR/BDR的选举；==》DRother。       </p>
+<p>  （2）关系：</p>
+<p>​       DR和BDR之间：邻接关系====》Full（邻接关系表示交互LSA，可以交互路由条目==》交作业）</p>
+<p>​       DR/BDR与DRother之间：邻接关系====》Full</p>
+<p>​       DRother之间：邻居关系====》2-way状态（只交互hello，不交互路由信息）</p>
+<p>  （3）DR和BDR一旦选举完成，不具备“抢占性”====》为了保证网络的稳定性。</p>
+<p>​       如果DR  Down掉，由BDR接替DR的工作；</p>
+<p>​       继续在DRother中选举一个BDR；</p>
+<p>​       如果原始的DR即便恢复正常，也只能当DRother；</p>
+<p>  （4）选举期：在MA网络中，选举时间是40s；在选举期内正常根据选举依据进行选举；</p>
+<p>​       一旦选举完成，就不能再更改====》非选举期内，不再选举。</p>
+<p>  （5）调整接口优先级：</p>
+<p>​       R8(config)#int f0/0</p>
+<p>​       R8(config-if)#ip ospf priority 100  </p>
+<p>  （6）DRother监听组播地址224.0.0.5</p>
+<p>​       DR、BDR监听2个组播地址224.0.0.5和224.0.0.6；</p>
+<p>​       当DRother想把路由信息传递给DR/BDR时，目标地址是224.0.0.6（上交）</p>
+<p>​       当DR、BDR通告路由信息的时候，目标地址是224.0.0.5（下发）</p>
+<p>  （7）清除ospf进程的命令：</p>
+<p>​       clear  ip ospf  process  ===&gt;输入yes；</p>
+<p>​       </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十四/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/25/网络基础十四/" itemprop="url">网络基础十四</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:57:19+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-14RIP"><a href="#1-14RIP" class="headerlink" title="1.14RIP"></a>1.14RIP</h1><p>1.路由协议：静态路由和动态路由</p>
+<p>​    静态路由的特点：优先级比较高，但是配置麻烦，不能自动适应拓扑改变。</p>
+<p>​    动态路由的特点：管理员手工告诉路由器之间使用什么语言（协议）进行交流，路由器之间自动进行路由条目的学习；还能自动适应拓扑变化。</p>
+<p>​    动态路由协议的分类：</p>
+<p>​    距离矢量路由协议：路由器没有全网拓扑，只是从邻居学到的路由（“道听途说”）—路标。</p>
+<p>​                 代表：RIP（公有）、eigrp（Cisco私有）</p>
+<p>​    链路状态路由协议：路由器上都有全网拓扑，会根据拓扑情况计算最优路径放到路由表中—地图    </p>
+<p>​                 代表：OSPF、IS-IS                 </p>
+<p>2.路由相关概念：</p>
+<p>  AD：管理距离，也叫做优先级。范围是0——255，越小越优先。C：最优的；其次是S优先级为1.</p>
+<p>  度量值：路由器把最优路径放到路由表中的“判断依据”，常见的度量值；跳数、带宽、成本（cost）</p>
+<p>  收敛：（从发送hello包开始）使所有路由表都达到一致状态的过程</p>
+<p>3.RIP的特点：</p>
+<p>  属于距离矢量路由协议的典型代表；管理距离（AD，优先级）默认是120.</p>
+<p>  RIp使用的是UDP协议来承载路由条目，端口号是udp-520</p>
+<p>  更新方式：定期更新（每隔30s更新一次）、广播更新、全路由表更新。</p>
+<p>  RIp是以跳数为度量值（metric），最大跳数是15，如果跳数为16，认为不可达。</p>
+<p>  RIPv1在更新路由的时候，不携带子网掩码===》只能支持有类的路由条目</p>
+<p>  RIPv2是无类的路由协议，更新的时候携带子网掩码。使用的组播更新，组播地址是224.0.0.9.   </p>
+<p>4.RIP的环路问题</p>
+<p>5.RIp的基本配置：</p>
+<p>  （1）配置：</p>
+<p>​    配置IP；配置rip；测试回还口是否通信；</p>
+<p>​    在R1上启动一个回还口44.2.2.2/24；发现在R2上只能ping通44.2.2.2，不能ping通44.1.1.1====》  </p>
+<p>​    R1上优先选择自己的回还口。</p>
+<p>​    router rip</p>
+<p>​    network 11.0.0.0</p>
+<p>​    network 12.0.0.0</p>
+<p>​    network 15.0.0.0</p>
+<p>​    查看路由协议的属性：</p>
+<p>​    show ip protocols   </p>
+<p>​    清空路由表的命令：clear  ip  route  * </p>
+<p> （2）查看路由表； </p>
+<p>​    R1#show ip route    [120是管理距离；2表示metric度量值——跳数]</p>
+<p>​    R     44.0.0.0/8 [120/2] via 15.1.1.2, 00:00:16, FastEthernet0/1</p>
+<p>​    R     45.0.0.0/8 [120/1] via 15.1.1.2, 00:00:16, FastEthernet0/1</p>
+<p>​    R     55.0.0.0/8 [120/1] via 15.1.1.2, 00:00:16, FastEthernet0/1</p>
+<p>  （3）RIpv2的配置；</p>
+<p>​    router  rip  </p>
+<p>​    version  2        //使用rip版本2</p>
+<p>​    network  12.1.1.0     //宣告自己的直连网段</p>
+<p>​    no  auto-summary     //关闭自动汇总后，更新的时候携带子网掩码；会自动把无类的路由为有类的</p>
+<p>​    路由进行通告；</p>
 <p>​    </p>
 
           
@@ -757,7 +1499,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/24/网络基础四/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十三/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -785,7 +1527,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/24/网络基础四/" itemprop="url">网络基础四</a></h1>
+                <a class="post-title-link" href="/2019/10/25/网络基础十三/" itemprop="url">网络基础十三</a></h1>
         
 
         <div class="post-meta">
@@ -797,8 +1539,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T19:22:23+08:00">
-                2019-10-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:57:08+08:00">
+                2019-10-25
               </time>
             
 
@@ -868,90 +1610,329 @@
       
         
           
-            <h1 id="1-4静态路由"><a href="#1-4静态路由" class="headerlink" title="1.4静态路由"></a>1.4静态路由</h1><p>1.网络层：把数据帧转换为数据包，实现基于IP地址的寻址和转发。</p>
-<p>  网络层的设备：路由器</p>
-<p>  网关的作用：当PC想跨网段通信的时候，所有不知道的数据包，都交给网关来处理。</p>
-<p>2.路由器的作用：</p>
-<p>​    （1）实现不同网段的通信；</p>
-<p>​    （2）隔离广播域；</p>
-<p>​          路由器的每个接口=一个网段=一个广播域</p>
-<p>​    （3）为数据包寻找一条最优路径。</p>
-<p>3.路由器的工作原理：源目IP地址不变，源目mac地址被重写。</p>
-<p>   注意：mac地址（全球唯一性）是二层的概念，是不能跨网段的。</p>
-<p>   当PC1（192.168.1.1）—-PC3（192.168.2.1）通信的时候</p>
-<p>  （1）PC1先查看自己的ARP表；如果有就直接发送；如果没有，就需要进行判断。</p>
-<p>​       PC1先判断目标主机和自己是否在相同的网段：</p>
-<p>​            如果在同一个网段，直接发送ARP请求（广播）；</p>
-<p>​            如果没有在相同的网段，就要把数据包发送给网关；</p>
-<p>​        Source源：         192.168.1.1    PC1的mac地址</p>
-<p>​        Destination目标：192.168.2.1    PC1网关的mac地址</p>
-<p>  （2）路由器：根据目标mac地址判断是不是找我的，是找我的我就回复；不是找我的，我就丢弃。</p>
-<p>​        如果是找我的，我就把数据帧还原成数据包，根据目标IP地址查看“路由表”，做转发。</p>
-<p>​        路由器把到达192.168.2.1的数据包从f0/1接口发送出去。</p>
-<p>​        Source：        192.168.1.1        PC3网关的mac</p>
-<p>​        Destination：    192.168.2.1     PC3的mac地址</p>
-<p>  （3）PC3的反应；给PC1回复数据包。</p>
-<p>​        Source：           192.168.2.1    PC3的mac地址 </p>
-<p>​        Destination目标：192.168.1.1    PC3的网关mac</p>
-<p>  （4）路由器：目标Mac是找我的，我就“拆包”，看到里边的目标Ip；</p>
-<p>​       根据目标IP进行路由表的查找，从相应接口发送出去。</p>
-<p>​        Source：           192.168.2.1    PC1的网关mac</p>
-<p>​        Destination目标：192.168.1.1    PC1的mac地址  </p>
-<p>4.常用配置：</p>
-<p>   （1）交换机的远程登录配置：</p>
-<p>​    第一步：配置IP</p>
-<p>​    SW1(config)#int vlan 1</p>
-<p>​    SW1(config-if)#ip add 192.168.1.100 255.255.255.0</p>
-<p>​    SW1(config-if)#no sh</p>
-<p>​    SW1(config-if)#exit</p>
-<p>​    第二步：配置telnet</p>
-<p>​    SW1(config)#line vty 0 4</p>
-<p>​    SW1(config-line)#pass</p>
-<p>​    SW1(config-line)#password 123456</p>
-<p>​    SW1(config-line)#login</p>
-<p>​    SW1(config-line)#exit</p>
-<p>​    第三步：配置特权模式的密码</p>
-<p>​    SW1(config)#enable password 123456            </p>
-<p>​    SW1(config)#no ip domain lookup    //关闭域名解析</p>
-<p>​    SW2(config)#ip default-gateway 192.168.2.254    //给交换机配置网关，实现跨网段通信</p>
-<p>​    常用排错命令：</p>
-<p>​    R1(config)#do show ip int bri     //查看接口状态和IP</p>
-<p>​    R1(config)#do show ip route     //查看路由表</p>
-<p>​    R1(config)#do show run        //查看当前配置</p>
-<p>​    （2）路由器的telnet配置：</p>
-<p>​    第一步：给路由器接口配置IP</p>
+            <h1 id="1-13NAT详解"><a href="#1-13NAT详解" class="headerlink" title="1.13NAT详解"></a>1.13NAT详解</h1><p>1.NAT的用途分为：</p>
+<p>  源SNAT：当内网访问外网的时候，经过路由器，会把源地址中的私网地址转换为公有地址，</p>
+<p>​                  SNAT。</p>
+<p> 目的：实现上网。</p>
+<p>  目的DNAT：当外网访问内网服务器的时候，经过（服务器端的）路由器的时候，会把目标公网地址</p>
+<p>  转换为服务器的真实私网IP，DNAT。</p>
+<p>​          目的：服务器发布，可以通过公网来访问，对外开放一些常用端口（web-tcp80;dns-</p>
+<p>  udp53）。</p>
+<p>​          发布服务器的两种方案：</p>
+<p>​          方案一：直接重新申请一个公网IP给服务器使用。================-===》静态NAT</p>
+<p>​          方法二：在路由器的公网口的Ip上，开放某个端口，作为服务器的端口映射。===》端口</p>
+<p> 映射        </p>
+<p>2.按照NAT的实现方式；</p>
+<p>  （1）静态NAT：一对一，一个私网ip对应一个公网ip。</p>
+<p>​                应用：当某一个服务器需要对外发布的时候。</p>
+<p>  （2）动态NAT：多对多，多个私网Ip对应多个公网ip。</p>
+<p>​                 应用：服务器集群使用。</p>
+<p>  （3）PAT（端口多路复用）：多对一，多个私网IP对应一个公网ip。</p>
+<p>​                 应用：常见的家庭网、企业网、园区网等用的比较多。</p>
+<p>3.PAT配置举例：</p>
+<p>​    R1(config)#int f0/1             //配置内网接口  （如果是单臂路由，进入子接口int f0/0.10）</p>
+<p>​    R1(config-if)#ip nat outside </p>
+<p>​    R1(config-if)#int f0/0         //配置外网接口</p>
+<p>​    R1(config-if)#ip nat inside </p>
+<p>​    R1(config-if)#exit</p>
+<p>​    R1(config)#access-list 10 permit host 192.168.1.1(标准访问控制列表是1–99，基于源IP)</p>
+<p>​    R1(config)#access-list 10 permit host 192.168.1.2（扩展访问控制列表的访问控制列表号是  </p>
+<p>​        100～199 ）</p>
+<p>​    R1(config)#ip nat inside source list 10 interface f0/1 overload //把私网地址转换为公网地址</p>
+<p>4.静态NAT：一对一 ；始终存在。</p>
+<p>​    R1(config)#int f0/1</p>
+<p>​    R1(config-if)#ip nat outside </p>
+<p>​    R1(config-if)#int f0/0   （如果是单臂路由，进入子接口int f0/0.10）</p>
+<p>​    R1(config-if)#ip nat inside </p>
+<p>​    R1(config-if)#exit</p>
+<p>​    R1(config)#ip nat inside source static 192.168.1.3 12.1.1.10  </p>
+<p>5.动态NAT：多对多 </p>
+<p>​    第一步：声明内网网接口</p>
+<p>​    R1(config)#int f0/1</p>
+<p>​    R1(config-if)#ip nat outside </p>
+<p>​    R1(config-if)#int f0/0</p>
+<p>​    R1(config-if)#ip nat inside </p>
+<p>​    R1(config-if)#exit</p>
+<p>​    第二步：定义需要做动态转换的服务器私网Ip</p>
+<p>​    R4(config)#access-list 20 permit host 192.168.2.3</p>
+<p>​    R4(config)#access-list 20 permit host 192.168.2.4</p>
+<p>​    R4(config)#access-list 20 permit host 192.168.2.5</p>
+<p>​    R4(config)#access-list 20 permit host 192.168.2.6</p>
+<p>​    第三步：定义一个公网地址池，名字叫Server，开启IP是34.1.1.10，结束ip是34.1.1.13，子网掩码是255.255.255.0</p>
+<p>​    R4(config)#ip nat pool Server 34.1.1.10 34.1.1.13 netmask 255.255.255.0</p>
+<p>​    第四步：把定义的NAT转换到公网地址池Server中</p>
+<p>​    R4(config)#ip nat inside source list 20 pool Server </p>
+<p>6.目的NAT的实现方式；让外网的客户端能访问内网服务器。</p>
+<p>​    方案一：直接重新申请一个公网IP给服务器使用。===》静态NAT</p>
+<p>​    方法二：在路由器的公网口的Ip上，开放某个端口，作为服务器的端口映射。===》端口映射</p>
+<p>​        配置端口映射：内网IP是192.168.1.3的TCP-80（web服务）到公网接口的12.1.1.1:80</p>
+<p>​        R1(config)#ip nat inside source static tcp 192.168.1.3 80 12.1.1.1 80    </p>
+<p>​        配置端口映射：内网ip是192.168.1.3的DNS服务器（udp-53），映射后的公网 ip12.1.1.1:53</p>
+<p>​        R1(config)#ip nat inside source static udp 192.168.1.3 53 12.1.1.1 53</p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/25/网络基础十二/" itemprop="url">网络基础十二</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:56:59+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-12ACL和NAT及ftp主被动模式"><a href="#1-12ACL和NAT及ftp主被动模式" class="headerlink" title="1.12ACL和NAT及ftp主被动模式"></a>1.12ACL和NAT及ftp主被动模式</h1><p>1.子网划分：</p>
+<p>  使用200.1.1.0/24在一条链路上，只使用2个IP，最佳的方案是怎么做？</p>
+<p>  2的m次方-2  &gt;=2    =====&gt; m&gt;=2（子网中0的个数）</p>
+<p>  255.255.255.111111  00  ====&gt;  255.255.255.252</p>
+<p>（1）以太网链路上的二层封装：EthernetII和802.3</p>
+<p>​     在以太链路上，子网掩码最多是30位。</p>
+<p>  (2）在公网上的二层封装是PPP（支持认证，标准协议），很多家庭用户接入使用的都是PPPOE拨</p>
+<p>​     号上网，只有用户名和密码都匹配完成才能上网。    </p>
+<p>​    如果在Serial串口链路上，子网最多可以是31位。</p>
+<p>​    在串行链路上，分为DCE和DTE</p>
+<p>​    DCE是data communicate equipment的意思，即数据通信设备,是ISP端，负责给客户端分配带</p>
+<p>​     宽。</p>
+<p>​    DTE是data terminal equipment的意思，即数据终端设备，是客户端。</p>
+<p>​    ISP端，需要给客户端分配带宽</p>
+<p>​    int  s0/2/0   (串口链路，此端口增加接口 WIC-2T)</p>
+<p>​    encapsulation  ppp     //设置接口封装格式为PPP</p>
+<p>​    ip  add  200.1.1.2   255.255.255.252    //配置接口IP</p>
+<p>​    clock  rate  2000000    //给客户端指定带宽是2M</p>
+<p>​    no  sh</p>
+<p>​    客户端：</p>
+<p>​    interface Serial0/3/0</p>
+<p>​        ip address 200.1.1.1 255.255.255.252</p>
+<p>​    encapsulation ppp</p>
+<p>​    no sh       </p>
+<p>（3）如果是回还口做测试，子网掩码最多是32位。</p>
+<p>​        <strong>***</strong>扩展： 配置回环口：</p>
+<p>​                            interface Loopback0</p>
+<p>​                            ip address 11.1.1.1 255.255.255.0</p>
+<p>1.扩展ACL：可以基于源目Ip、源目端口、协议来对数据流量做过滤。（编号100–199）</p>
+<p>​    举例1；定义一个ACL，编号为101，拒绝192.168.1.0/24 到达 192.168.2.2 的FTP服务</p>
+<p>​    Router(config)# access-list 101 deny tcp 192.168.1.0 0.0.0.255 host 192.168.2.2 eq 21   </p>
+<p>​    举例2：定义ACL101，拒绝192.168.1.0/24访问192.168.2.2的ICMP服务</p>
+<p>​    Router(config)# access-list  101  deny  icmp  192.168.1.0  0.0.0.255  host  192.168.2.2  </p>
+<p>​    举例3：允许或拒绝所有流量</p>
+<p>​    Router(config)# access-list 101 permit ip any any   //第一个any是源，第二个any是目标</p>
+<p>2.实验举例：</p>
+<p>​    R2(config)#access-list 100 permit tcp host 192.168.1.1 host 192.168.2.3 eq 80</p>
+<p>​    R2(config)#access-list 100 deny   ip host  192.168.1.1 host 192.168.2.3</p>
+<p>​    R2(config)#access-list 100 permit icmp host 192.168.1.1 host 192.168.2.1 </p>
+<p>​    R2(config)#access-list 100 deny   icmp host 192.168.1.1 host 192.168.2.2</p>
+<p>​    R2(config)#access-list 100 permit tcp host 192.168.1.2 host 12.1.1.2 eq telnet</p>
+<p>​    interface Serial0/2/0</p>
+<p>​    ip address 12.1.1.2 255.255.255.252           //配置IP</p>
+<p>​    encapsulation ppp                                   //设置封装格式</p>
+<p>​    ip access-group 100 in                                   //应用到接口</p>
+<p>​    clock rate 4000000                                       //设置时钟频率，给客户端分配的带宽</p>
+<p>​    检查命令：show   access-lists                          //检查ACL的匹配情况</p>
+<p>​    </p>
+<p>​    如果删除某条ACL，就要使用命名ACL的规则：</p>
+<p>​        全部删除：no access-list 100</p>
+<p>​        部分删除：</p>
+<p>​    R2(config)#ip access-list extended 100   //extended表示修改扩展ACL，编号为100</p>
+<p>​    R2(config-ext-nacl)#no 80            //删除ACL条目编号为80</p>
+<p>​    补充特殊的ACL：FTP的被动模式</p>
+<p>​    access-list 100 permit tcp host 192.168.1.2 host 192.168.2.3 eq ftp   //放行192.168.1.2到   </p>
+<p>​    192.168.2.3的TCP-21，FTP控制连接</p>
+<p>​    access-list 100 permit tcp host 192.168.1.2 host 192.168.2.3 range 1024 65535        //放行   </p>
+<p>​      数据连接，目标端口号为大于1024的范围</p>
+<p>​    远程登录配置：</p>
+<p>​    R2(config)#line vty 0 4                              #0表示第1个虚拟接口；4表示最多允许登录人数</p>
+<p>​    R2(config)#password 123456</p>
+<p>​    R2(config)#login</p>
+<p>​    ***R2(config)#enable password 123456   #password表示的明文密码</p>
+<p>​    ***R2(config)#enable secret  123456        #secret表示密文的密码；如果两个都存在，那么密文</p>
+<p>​    生效</p>
+<p>3.常见服务和端口的对应关系</p>
+<p>​    UDP服务：DHCP（udp-67,68）、DNS（udp-53）、NTP（udp-123，用于linux中的时间同  </p>
+<p>​     步），TFTP（udp-69）</p>
+<p>​    TCP服务：       </p>
+<p>​    FTP(tcp-21:建立连接 和 tcp-20:传输数据)</p>
+<p>​    http（tcp-80）；https（tcp-443）</p>
+<p>​    远程桌面RDP（tcp-3389）</p>
+<p>​    Telnet（tcp-23）</p>
+<p>​    MySQL（tcp-3306）</p>
+<p>​    ssh（tcp-22）</p>
+<p>​    SMTP（tcp-25）</p>
+<p>​    POP3（tcp-110）</p>
+<p>​    共享（tcp-445）</p>
+<p>1.NAT(Network  Address  Translation)：网络地址转换，用来把私网地址转换为公网地址。</p>
+<p>  NAT的作用：实现地址转换；实现内外网隔离；节约了IP地址；把IPV4转换为IPv6.</p>
+<p>2.NAT的工作原理：</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5Caa51f215e9e140fa94e11135a7af4716%5Cnat%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png" alt="img"></p>
+<p>3.NAT的配置步骤 ：</p>
+<p>  第一步：先定义内外网接口（R1是出口路由器）</p>
 <p>​    R1(config)#int f0/0</p>
-<p>​    R1(config-if)#ip add 192.168.1.254 255.255.255.0</p>
-<p>​    R1(config-if)#no sh</p>
-<p>​    第二步：配置telnet</p>
-<p>​    R1(config)#line vty 0 4</p>
-<p>​    R1(config-line)#password 123456</p>
-<p>​    R1(config-line)#login</p>
-<p>​    R1(config-line)#exit</p>
-<p>​    R1(config)#enable password 123456</p>
-<p>​    （3）路由器接口是三层接口，可以直接配置IP；</p>
-<p>​    Router(config)#int f0/1</p>
-<p>​    Router(config-if)#ip add 192.168.2.254 255.255.255.0</p>
-<p>​    Router(config-if)#no sh</p>
-<p>​    （4）查看路由表：</p>
-<p>​    Router(config-if)#do show ip route </p>
-<p>​    C  表示connected，直连路由，成立的条件只要接口处于up状态，路由器就会自动把直连路由加载到路由表里。</p>
-<p>​    （5）清空配置：</p>
-<p>​    erase  startup-config     //清空当前配置</p>
-<p>​    reload       //重启后才生效    </p>
-<p>5.路由协议：路由器之间交流使用的语言。</p>
-<p>  路由协议分为动态路由协议和静态路由协议（由管理员来配置）。</p>
-<p>  基本格式：  ip  route   目标网段   目的子网    下一跳（直连链路的对端地址）</p>
-<p>  （1）配置IP</p>
-<p>​      int   f0/0</p>
-<p>​      ip  address 192.168.1.254   255.255.255.0</p>
-<p>​      no  sh  </p>
-<p>  （2）配置路由：</p>
-<p>​         查看路由表：do show ip route</p>
-<p>​         配置路由：ip route 0.0.0.0 0.0.0.0 下一跳</p>
-<p>  （3）检查路由表；</p>
-<p>  如果不通，逐跳ping测试。</p>
-<p>  tracert  192.168.7.1     //路由追踪，可以显示数据包沿途经过的设备  </p>
+<p>​    R1(config-if)#ip nat inside   （内网接口）</p>
+<p>​    R1(config-if)#int f0/1</p>
+<p>​    R1(config-if)#ip nat outside （外网接口）</p>
+<p>  第二步：定义上网的网段</p>
+<p>​    R1(config)#access-list 10 permit 192.168.1.0 0.0.0.255（0为精准，1为模糊）</p>
+<p>  第三步：把私网地址转换为公网地址</p>
+<p>​    R1(config)#ip nat inside source list 10 interface f0/1 overload </p>
+<p>  检查命令： </p>
+<p>​    R1#show ip nat translations      //显示nat转换记录</p>
+<p>​    协议     公网地址          私网地址            公网的目标地址</p>
+<p>​    Pro      Inside global     Inside local       Outside local      Outside global</p>
+<p>​    icmp     12.1.1.1:33       192.168.1.1:33     34.1.1.2:33        34.1.1.2:33</p>
+<p>Destination host unreachable   //目标主机不可达，一般是路由问题；</p>
+<p>ftp主被动模式：</p>
+<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C092e47792efe46ee9590c11aea418259%5Cftp%E7%9A%84%E4%B8%BB%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F.png" alt="img"></p>
 
           
         
@@ -1000,7 +1981,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/24/网络基础三/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -1028,7 +2009,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/24/网络基础三/" itemprop="url">网络基础三</a></h1>
+                <a class="post-title-link" href="/2019/10/25/网络基础十/" itemprop="url">网络基础十</a></h1>
         
 
         <div class="post-meta">
@@ -1040,8 +2021,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T19:22:15+08:00">
-                2019-10-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:56:03+08:00">
+                2019-10-25
               </time>
             
 
@@ -1111,83 +2092,105 @@
       
         
           
-            <h1 id="1-3-网络层"><a href="#1-3-网络层" class="headerlink" title="1.3 网络层"></a>1.3 网络层</h1><p>1.网络层：把数据帧转换为数据包，实现基于Ip地址的寻址和转发。</p>
-<p>  数据帧：在数据外边加入二层头部（帧头和帧尾）</p>
-<p>​          Dmac（6Byte）+Smac（6Byte）+Type（2Byte）+Data +FCS（4Byte，帧尾）</p>
-<p>  数据包：三层IP头部+数据</p>
-<p>2.IP头部：标准长度是20Byte。</p>
-<p>  TTL：time to  live 生存时间，是一个三层防环机制，可以限制一个数据包在网络中传输的时间。</p>
-<p>​       数据包每经过一个三层设备（路由器），他的TTL值就会减1，如果TTL=0，那么这个数据包就不能继续传输，会被丢弃。</p>
-<p>​       每经过一个三层设备，叫做1跳。</p>
-<p>  Protocol：用来标识上层协议，如果是UDP=17；TCP=6；ICMP=1.</p>
-<p>  Source IP </p>
-<p>  Destination IP </p>
-<p>3.ARP：Address Resolution  Protocol地址解析协议，用来根据Ip地址解析mac。</p>
-<p>  ARP报文分为2类：ARP请求报文Request；ARP响应报文Reply。</p>
-<p>  ARP请求报文是以广播的形式发送；ARP响应报文是以单播的形式回复。</p>
-<p>  arp  -a    //查看arp缓存信息</p>
-<p>  arp  -d    //清除ARP缓存</p>
-<p>4.ICMP：（Internet Control Message Protocol）互联网控制报文协议，是一个“错误侦测与回馈机制”，用来测试网络连通性。</p>
-<p>  ICMP报文类型分为2种：Request请求报文和Reply回复报文。</p>
-<p>  ping是一个工具/命令，利用的是ICMP协议。</p>
-<p>  ping的常用参数：</p>
-<p>  ping <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a> -t             //长ping，只能按Ctrl+C停止</p>
-<p>  ping -a 192.168.120.250            //-a解析主机名</p>
-<p>  ping -l 1000 <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>        //-l指定测试数据包的大小；指定为1000个字节</p>
-<p>  ping -n 6 <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>            //-n指定发送数据包的个数为6</p>
-<p>  ping -i 5 <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>            //-i指定TTL值（每经过一个路由器减1，如果TTL=0就不能再继续传输）</p>
-<p>  ping -l 1501 -f <a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a>        //指定发送的数据包为1501，-f表示不允许分片</p>
-<p>5.ARP欺骗:交换机的工作原理是广播，对用户的身份没有验证功能。</p>
-<p>  ARP欺骗：欺骗所有主机（告诉所有客户端假的网关mac地址）；中间人攻击（欺骗两个通信主机，获取他们的通信数据）。</p>
-<p>  （1）实验说明：</p>
-<p>​       3台虚拟机，连接到VMNET1,</p>
-<p>​       windows7(客户端)——&gt;攻击者——&gt;server  2008</p>
-<p>​       192.168.1.1           192.168.1.2   192.168.1.3</p>
-<p>​       修改各个主机的Ip地址，并且测试是否能通信。（注意防火墙的问题）</p>
-<p>  （2）在攻击者的主机上安装Cain软件</p>
-<p>​            Cain——————&gt;Sniffer————&gt;开始嗅探————&gt;右键————&gt;Scan  mac  address</p>
-<p>​       下边ARP——————&gt;加号——————&gt;找左边是欺骗对象，右边是欺骗的条————&gt;左                               上角低三个黄色图标，开始ARp欺骗。</p>
-<p>  （3）在Server 2008 上安装FTP并配置</p>
-<p>​       第一步：添加角色——————&gt;WEB服务——————&gt;FTP服务</p>
-<p>​       第二步：创建目录ftproot，目录下创建两个文件夹</p>
-<p>​                    down </p>
-<p>​                    up  </p>
-<p>​       第三步：创建对应的用户，mengzhu和tianxiao</p>
-<p>​       第四步：编辑文件夹的权限，并设置mengzhu给予下载权限；tiaoxiao给予上传的权限。</p>
-<p>​       第五步：在IIS里创建FTP站点即可。</p>
-<p>  （4）在Windows 7 （客户端）进行访问并测试</p>
-<p>​       在攻击者的主机上，查看是否有passwords（左下角第4个），如果有密码就证明获取密码成功。</p>
-<p>6.Telnet：远程登录管理方式，使用的端口号是TCP-23。</p>
-<p>  （1）在2008里添加“功能”—–》telnet服务端和客户端</p>
-<p>  （2）使用services.msc  打开服务，开启telnet</p>
-<p>  （3）在Windows7上使用命令行来登录telnet</p>
-<p>​       telnet  192.168.1.3  </p>
-<p>​       d:    //切换到d盘</p>
-<p>​       echo  123456  &gt; telnet.txt   //在被控制主机上创建一个文件</p>
-<p>​       type  telnet.txt                //查看telnet文件内容   </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
-<p>​       </p>
+            <h1 id="1-10HSRP"><a href="#1-10HSRP" class="headerlink" title="1.10HSRP"></a>1.10HSRP</h1><p>1.HSRP（Hot Standby Routing  Protocol）：热备份路由协议，解决的是网关的冗余问题。</p>
+<p>  HSRP是Cisco的私有协议，公有协议是VRRP。</p>
+<p>2.HSRP中的路由器角色</p>
+<p>  （1）Active：主路由器，第一个功能是负责转发客户端的流量；第二个功能是定期向外发送hello包。（需要设置抢占，抢占设置优先级）</p>
+<p>  （2）Standby：备份路由器，如果主路由器发生故障，要接替主路由器的工作，负责转发用户的数据。</p>
+<p>​                作用：监听主路由器的状态；定期向外发送hello。</p>
+<p>  （3）Virtual Router 虚拟路由器:真实路由器逻辑上模拟出来的路由器，使用IP作为客户端的网关。</p>
+<p>  （4）其他路由器:当备份顶替主路由器时，顶替备份路由器来工作  </p>
+<p>3.HSRP中的角色选举依据；先比优先级大的，优先级相同再比ip地址大的</p>
+<p>   （1）优先级可以人工干预设置，默认优先级是100，取值范围是0-255</p>
+<p>   （2）优先级相同，比较IP</p>
+<p>4.HSRP的工作原理：</p>
+<p>   （1）所有路由器中选举一个Active，负责转发用户流量；并向外发送hello</p>
+<p>   （2）当活跃路由器故障后，备份路由器监听不到活跃路由器的hello消息后会成为活跃路由器，承</p>
+<p>​            担活跃路由器转发到虚拟路由器的数据包；  </p>
+<p>   （3）然后其他路由器收不到备份路由器的hello消息，他们会从其他路由器中选举出一个新的备份</p>
+<p>​           路由器。</p>
+<p>5.HSRP的mac地址说明：</p>
+<p>  0000.0c07.ac2f  其中0000.0c表示厂商信息，07.ac是众所周期的mac；2f表示HSRP的组号</p>
+<p>6.HSRP的基本配置：</p>
+<p>  主路由器的配置；</p>
+<p>  interface FastEthernet0/0</p>
+<p>​     ip address 192.168.1.100 255.255.255.0    //物理接口的IP</p>
+<p>​     standby version 2            //HSRP的版本号，默认是版本2；默认不需要配置</p>
+<p>​     standby 1 ip 192.168.1.254        //配置虚拟的网关Ip</p>
+<p>​     standby 1 timers 3 10        //设置Hellotime为3秒，Holdtime为10秒，默认即为该值</p>
+<p>​     standby 1 priority 105            //调整接口的优先级为105，默认优先级为100，（优先级选  </p>
+<p>​     择范围100—110）</p>
+<p>​     standby 1 preempt                //开启抢占，主发生故障再恢复以后，把状态抢回来。</p>
+<p>​     standby 1 track FastEthernet0/0    //设置接口追踪</p>
+<p>​     standby 1 track FastEthernet0/1   </p>
+<p>  备份路由器的配置：</p>
+<p>  interface FastEthernet0/0</p>
+<p>​     ip address 192.168.1.200 255.255.255.0</p>
+<p>​     standby version 2</p>
+<p>​     standby 1 ip 192.168.1.254</p>
+<p>​     standby 1 track FastEthernet0/1</p>
+<p>​     standby 1 track FastEthernet0/0</p>
+<p>  检查命令：</p>
+<p>  R2#show standby brief   //查看HSRP（Host Standby Routing Protocol）的简要信息</p>
+<p>​     Interface   Grp  Pri P State    Active          Standby         Virtual IP</p>
+<p>​     Fa0/0       1    90    Standby  192.168.1.100   local           192.168.1.254 </p>
+<p>​    本地启用HSRP的接口；Group表示组；State 表示本地的状态；Active表示活跃路由器的IP；Virtual Ip是虚拟的客户端的网关</p>
+<p>  R2#show standby </p>
+<p>​    FastEthernet0/0 - Group 1 (version 2)    //启用HSRP的接口是f0/0，组号为1，版本号为2</p>
+<p>​    State is Standby            //本地的状态为Standby</p>
+<p>​    9 state changes, last state change 00:49:15</p>
+<p>​     Virtual IP address is 192.168.1.254   //虚拟的网关Ip</p>
+<p>​     Active virtual MAC address is 0000.0C9F.F001            //虚拟的网关mac</p>
+<p>​     Local virtual MAC address is 0000.0C9F.F001 (v2 default)</p>
+<p>​    Hello time 3 sec, hold time 10 sec          //hello时间</p>
+<p>​    Next hello sent in 2.011 secs</p>
+<p>​    Preemption disabled                //抢占是关闭</p>
+<p>​    Active router is 192.168.1.100, priority 90 (expires in 6 sec)        //活跃路由器的IP是  </p>
+<p>​    192.168.1.100，优先级为90</p>
+<p>​    MAC address is 0000.0C9F.F001     //活跃路由器的mac地址</p>
+<p>​    Standby router is local            //本地是standby</p>
+<p>​     Priority 90 (default 100)            //本地的优先级为90，默认是100</p>
+<p>​    Track interface FastEthernet0/1 state Up decrement 10        //默认追踪接口故障，“罚值”是10，如果接口故障，优先级降低10.</p>
+<p>​     Track interface FastEthernet0/0 state Up decrement 10</p>
+<p>​     Group name is hsrp-Fa0/0-1 (default)        </p>
+<p>7.配置思路：</p>
+<p>  （1）配置PC的ip和网关</p>
+<p>  （2）给交换机划分vlan</p>
+<p>​        int  f0/1  （下）</p>
+<p>​        swi  mode  access </p>
+<p>​        swi  acc vlan  10</p>
+<p>​        int  f0/5    （上）</p>
+<p>​        sw   mode  trunk </p>
+<p>​        sw   trunk  allow vlan all </p>
+<p>​    （3）在网关路由器上的子接口上配置HSRP协议，虚拟出来不同vlan的网关</p>
+<p>​        interface FastEthernet0/0.10             //让这个路由器的子接口成为vlan10的Active</p>
+<p>​        encapsulation dot1Q 10</p>
+<p>​        ip address 192.168.10.100 255.255.255.0</p>
+<p>​        standby version 2</p>
+<p>​        standby 10 ip 192.168.10.254</p>
+<p>​        standby 10 priority 105</p>
+<p>​        standby 10 preempt</p>
+<p>​        standby 10 track FastEthernet0/0</p>
+<p>​        standby 10 track FastEthernet0/1</p>
+<p>​        interface FastEthernet0/0.20        //让这个路由器的子接口成为vlan20的Standby</p>
+<p>​        encapsulation dot1Q 20</p>
+<p>​        ip address 192.168.20.100 255.255.255.0</p>
+<p>​        standby version 2</p>
+<p>​        standby 20 ip 192.168.20.254</p>
+<p>​        standby 20 preempt</p>
+<p>​        standby 20 track FastEthernet0/0</p>
+<p>​        standby 20 track FastEthernet0/1</p>
+<p>  （4）在网关路由器上配置其他接口的IP和路由问题</p>
+<p>​        ip route 0.0.0.0 0.0.0.0 192.168.100.1 </p>
+<p>​        ip route 0.0.0.0 0.0.0.0 192.168.150.2 </p>
+<p>  （5）在出口路由器配置Ip，解决2个路由问题————一个是到达内网的路由问题；一个是到达外 </p>
+<p>​           网的路由问题。</p>
+<p>​       ip route 192.168.10.0 255.255.255.0 192.168.100.2 </p>
+<p>​       ip route 192.168.20.0 255.255.255.0 192.168.100.2 </p>
+<p>​       ip route 192.168.10.0 255.255.255.0 192.168.200.2 </p>
+<p>​       ip route 192.168.20.0 255.255.255.0 192.168.200.2 </p>
+<p>​       ip route 0.0.0.0 0.0.0.0 12.1.1.2 </p>
+<p>​        </p>
 
           
         
@@ -1236,7 +2239,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/24/网络基础二/">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础九/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="吕敏">
@@ -1264,7 +2267,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/10/24/网络基础二/" itemprop="url">网络基础二</a></h1>
+                <a class="post-title-link" href="/2019/10/25/网络基础九/" itemprop="url">网络基础九</a></h1>
         
 
         <div class="post-meta">
@@ -1276,8 +2279,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-24T19:13:57+08:00">
-                2019-10-24
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:55:35+08:00">
+                2019-10-25
               </time>
             
 
@@ -1347,1677 +2350,358 @@
       
         
           
-            <h1 id="1-2-数据链路层"><a href="#1-2-数据链路层" class="headerlink" title="1.2 数据链路层"></a>1.2 数据链路层</h1><p>1.OSI七层模型：</p>
-<p>  （1）物理层：定义了终端设备的传输介质，传输的是bit流。</p>
-<p>  （2）数据链路层：把bit转换为数据帧，实现基于mac地址的寻址和转发</p>
-<p>  （3）网络层：把数据帧转换为数据包，实现基于IP地址的寻址和转发</p>
-<p>  （4）传输层：把数据包转换为数据段，为数据提供可靠或者不可靠的传输，为应用程序提供端到端的服务</p>
-<p>  （5）会话层：建立、维持和管理、终止会话</p>
-<p>  （6）表示层：数据的表现形式，比如压缩、加密、</p>
-<p>  （7）应用层：为用户提供服务。</p>
-<p>2.数据链路层：把bit转换为数据帧，实现基于mac地址的寻址和转发</p>
-<p>  （1）Mac地址：是由48 bit的二进制数组成，为了读写方便，用十六进制表示。</p>
-<p>​                其中前24bit表示厂商信息，后24位表示设备信息，由厂家自定义。</p>
-<p>​                mac地址是由厂家出厂的时候直接烧录到网卡里，一般情况下不能修改。</p>
-<p>  （2）Mac地址的分类：</p>
-<p>​                单播mac：如果一个Mac地址的第8bit是0，那么这个mac地址表示单播mac。</p>
-<p>​                组播mac：如果一个Mac地址的第8bit是1，那么这个mac地址表示组播mac。</p>
-<p>​                广播mac：全FF-FF-FF-FF-FF-FF</p>
-<p>  （3）数据帧格式：EthernetII数据帧</p>
-<p>​       二层数据帧最大1518Byte == 6Byte的Dmac+ 6Byte Smac+ 2Byte（Type字段：标识上层协议） + 数据Data（最大1500Byte） +4Byte（帧校验：FCS）</p>
-<p>3.交换机的工作原理：</p>
-<p><img src="C:%5CUsers%5CAdministrator%5CAppData%5CLocal%5CYNote%5Cdata%5C2693615777@qq.com%5C09e38586875546599d71dc02864b7914%5Cclipboard.png" alt="img"></p>
-<p>4.真实设备连接：</p>
-<p>  （1）设备的console口————console线————PC的USB口</p>
-<p>  （2）在真机里安装USB-COM口的驱动</p>
-<p>  （3）计算机——管理——设备管理——端口，找到驱动起来的接口编号</p>
-<p>  （4）真机里安装远程管理的软件：Xshell/SecureCRT/Putty       </p>
-<p>5.交换机的组成：</p>
-<p>  （1）CPU：用于运算和控制</p>
-<p>  （2）ROM：Read  Only  Memory，只读存储，存储的系统的引导文件====》类似于引导分区</p>
-<p>  （3）RAM：Random Access Memory，随机存储，相当于内存====》running-config  </p>
-<p>  （4）Flash：闪存，用于存放IOS（路由器或者交换机的系统）系统，也可以存放用户数据。=====》类似于C盘。</p>
-<p>  （5）NVRAM：非易失性存储，为数据做永久存储。=====》类似于硬盘。</p>
-<p>6.交换机的常见模式：</p>
-<p>​    Switch&gt;en   //用户模式，只能使用一些简单的命令；不能查看当前配置。</p>
-<p>​    Switch#            //特权模式，可以使用比较多的查看命令。</p>
-<p>​    Switch#conf t        //全局配置模式，修改交换机的配置</p>
-<p>​    Enter configuration commands, one per line.  End with CNTL/Z.</p>
-<p>​    Switch(config)#</p>
-<p>​    退出模式：exit</p>
-<p>​    直接退到特权模式：end  == Ctrl + z </p>
-<p>​    快捷键：ctrl+a   移动到行首</p>
-<p>​            ctrl+e   移动到行尾</p>
-<p>​            ctrl+u   清空行</p>
-<p>​            Ctrl+shift+6   </p>
+            <h1 id="1-9STP及STP的选举"><a href="#1-9STP及STP的选举" class="headerlink" title="1.9STP及STP的选举"></a>1.9STP及STP的选举</h1><p>1.STP的作用和版本</p>
+<p>  （1）作用：二层的防环机制</p>
+<p>  （2）版本：</p>
+<p>​       STP：生成树协议，只有1棵树——————&gt;PVST（每vlan每生成树，Cisco私有协议）</p>
+<p>​       RSTP：快速生成树协议，只有1棵树——————&gt;Rapid PVST（快速每vlan每生成树，</p>
+<p>​           Cisco的私有协议）</p>
+<p>​       MST：多实例生成树，可以基于实例（组）对根桥进行选举。</p>
+<p>2.STP的三步选举：比较小的。</p>
+<p>  （1）第一步：选举根桥（Root Bridge：皇帝）</p>
+<p>  （2）第二步：选举根端口（Root port：知府）RP</p>
+<p>  （3）第三步：选举指定端口（Designated Port：钦差）DP</p>
+<p>3.第一步选举：在所有的交换机中选举一个根桥</p>
+<p>   选举依据：网桥ID=2Byte（优先级）+6Byte（mac地址）   </p>
+<p>   一般会通过优先级来控制根桥的选举。</p>
+<p>4.第二步选举：在每个非根桥上选举一个根端口（Root Port）</p>
+<p>  选择根端口的依据：</p>
+<p>  到根网桥最低的根路径成本（开销，到达根桥最近）</p>
+<p>  直连的网桥ID最小(发送者)</p>
+<p>  端口ID最小（发送者）</p>
+<p>5.第三步选举：在每条链路上选举一个指定端口（DP）</p>
+<p>   根桥上的所有接口都是指定端口</p>
+<p>   非根桥上的指定端口，选择顺序：</p>
+<p>   端口所在交换机到达根路径成本较低</p>
+<p>   本端交换机网桥ID较小</p>
+<p>   本端的端口ID的值较小</p>
+<p>6.STP的其他知识</p>
+<p>  （1）STP通过BPDU（桥协议数据单元）来交互报文信息。</p>
+<p>​       BPDU分为两大类：一类是“配置BPDU”用来完成STP的选举；另一种是拓扑变更TCP的</p>
+<p>​       BPDU，当拓扑发生改变的时候交互信息。</p>
+<p>  （2）STP中的几种状态：</p>
+<p>​       Disabled：禁用状态</p>
+<p>​       Blocking：阻塞状态，不能收发用户数据，只能接收BPDU（时刻监听网络的状态）</p>
+<p>​       Listening：用来选举</p>
+<p>​       Learning：用于学习mac地址</p>
+<p>​       Forwarding：收发用户数据</p>
+<p>  （3）STP中的状态切换时间</p>
+<p>​       Listening—&gt;learning—&gt;Forwarding 经过了30s：PC接入网络的时间</p>
+<p>​       Blocking—&gt;Listening—&gt;learning—&gt;Forwarding 经过50s     </p>
+<p>7.STP的相关命令</p>
+<p>  show  spanning-tree     //查看生成树的收敛结果</p>
+<p>  3L-1#  show spanning-tree vlan 10      //查看STP的接口状态命令 </p>
+<p>  spanning-tree   vlan 10 root primary    //让本交换机成为vlan10的主根桥</p>
+<p>  spanning-tree   vlan 20 root secondary //让本交换机成为vlan20的备份根桥</p>
+<p>  spanning-tree   vlan  10   priority   4096   //调整交换机在vlan10里的优先级为4096，值必须是4096 </p>
+<p>  的倍数</p>
+<p>  spanning-tree vlan 10,20,30 priority 24576   //如果一个交换机设置为root  primary会自动降低  </p>
+<p>  8192；</p>
+<p>  spanning-tree vlan 40,50,60 priority 28672   //如果一个交换机设置为root  secondary会降低4096</p>
+<p>  Switch(config)#int   f0/1              //默认情况下，PC接入网络中需要等待30s的延迟（STP的收</p>
+<p>  敛），为了加快时间的收敛，启用portfast。</p>
+<p>  Switch(config-if)#spanning-tree portfast    //启用portfast以后，接口不再等待30s的STP报文交互，</p>
+<p>  直接进入到Forwarding状态</p>
+<p>8.基础命令</p>
+<p>  （1）配置vlan命令</p>
+<p>​    interface FastEthernet0/3        //把接口加入到vlan30</p>
+<p>​    switchport access vlan 30</p>
+<p>​    switchport mode access</p>
+<p>​    interface FastEthernet0/4        //把接口设置为trunk</p>
+<p>​    switchport mode trunk</p>
+<p>​    show  vlan   brief     //检查接口和vlan是否对应</p>
+<p>​    show  int   trunk     //检查trunk链路是否正常</p>
+<p>  （2）三层交换机上下联接口使用trunk</p>
+<p>​     interface range  FastEthernet0/1 - 3</p>
+<p>​     switchport trunk encapsulation dot1q           </p>
+<p>​     switchport mode trunk</p>
+<p>​    3L-1(config)#spanning-tree vlan 10,20,30 root primary       //交换机做vlan10/20/30的主根桥</p>
+<p>​    3L-1(config)#spanning-tree vlan 40,50,60 root secondary    //交换机做vlan40/50/60备份根桥</p>
+<p>​    3L-2(config)#spanning-tree vlan 40,50,60 root primary </p>
+<p>​    3L-2(config)#spanning-tree vlan 10,20,30 root secondary </p>
+<p>  （3）三层交换机上配置PC的网关</p>
+<p>​    3L-2(config)#int vlan 50</p>
+<p>​    3L-2(config-if)#ip add 192.168.50.254 255.255.255.0</p>
+<p>​    3L-2(config-if)#no sh</p>
+<p>​    3L-2(config)#ip  routing   </p>
+<p>  （4）配置回环口：</p>
+<p>​       interface Loopback0</p>
+<p>​       ip address 11.1.1.1 255.255.255.0</p>
+<p>  特别说明：做实验的时候，先把内网做通！！！</p>
+<p>  三层交换机上要有默认路由到出口路由器；出口路由器要有到达内网的路由。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础八/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/25/网络基础八/" itemprop="url">网络基础八</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:55:23+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-8三层交换和DHCP"><a href="#1-8三层交换和DHCP" class="headerlink" title="1.8三层交换和DHCP"></a>1.8三层交换和DHCP</h1><p>1.交换机的工作原理是广播————&gt;划分广播域：vlan划分——————&gt;access和trunk————&gt;  </p>
+<p>  不同vlan之间的通信——————&gt;单臂路由</p>
+<p>  单臂路由：源目IP地址不变，mac地址被重写；实现标签置换。</p>
+<p>  trunk链路的工作原理：发送的时候会给数据帧打上相应vlan的标签（802.1q数据帧）；接收的时候</p>
+<p>  根据标签里的vlanID来识别来自哪个vlan。</p>
+<p>  在出交换机的时候，去掉标签，还原成原始数据帧。</p>
+<p>2.单臂路由带来的问题：</p>
+<p>​    “单臂”为网络骨干链路，容易形成网络瓶颈</p>
+<p>​    子接口依然依托于物理接口，应用不灵活</p>
+<p>​    VLAN间转发需要查看路由表，严重浪费设备资源</p>
+<p>3.常见的数据包交换方式：</p>
+<p>​    （1）包交换：每个数据包在经过路由器的时候，都要查找路由表（通过CPU）。</p>
+<p>​    （2）三层交换技术；</p>
+<p>​         基于数据流来进行路由表的查找；</p>
+<p>​         查找完了以后，会在本地的ASIC芯片上做缓存，后续报文不再需要查路由表，直接查找缓</p>
+<p>​                 存信息。</p>
+<p>​        </p>
+<p>​         五元组：源目IP、源目端口、协议。如果多个数据包的五元组一样，我们把他们都称为同</p>
+<p>​                 一个“数据流”</p>
+<p>​         七元组：源IP地址、目的IP地址、协议号、源端口、目的端口，服务类型以及接口索引</p>
+<p>​    （3）CEF转发：基于拓扑的模型</p>
+<p>​         FIB:转发信息表，路由表的download（复制了一份）</p>
+<p>​         邻接关系表：ARP表。</p>
+<p>4.三层交换机的工作原理：一次路由，多次交换。</p>
+<p>  基本配置：</p>
+<p>  （1）支持开启路由功能：ip  routing </p>
+<p>  （2）把二层接口转换为3层接口，直接配置IP</p>
+<p>​       int  f0/1</p>
+<p>​       no   switchport       //关闭二层功能，转换为三层接口</p>
+<p>​       ip   address   192.168.10.254  255.255.255.0</p>
+<p>​       no   sh   </p>
+<p>  （3）支持SVI（Switch  Virtual  Interface）交换虚接口</p>
+<p>​      int  vlan  10</p>
+<p>​       ip    add 192.168.10.254   255.255.255.0</p>
+<p>​       no    sh  </p>
+<p>5.实验说明：</p>
+<p>  （1）配置PC</p>
+<p>  （2）配置二层交换机：划分vlan和trunk</p>
+<p>​              vlan 10</p>
+<p>​              int f0/1</p>
+<p>​              switchport mode access</p>
+<p>​              switchport access vlan 10</p>
+<p>​              switchport mode trunk</p>
+<p>​              switchport trunk allowed vlan all</p>
+<p>  （3）配置三层交换机：</p>
+<p>​         第一步：把内网接口配置为trunk链路，并设置封格式为dot1q</p>
+<p>​             interface FastEthernet0/1</p>
+<p>​         switchport trunk encapsulation dot1q</p>
+<p>​         switchport mode trunk</p>
+<p>​        第二步：在交换虚接口里配置PC的网关</p>
+<p>​        3L-1(config)#vlan  10   </p>
+<p>​        3L-1(config)#int vlan 10</p>
+<p>​        3L-1(config-if)#ip add 192.168.10.254 255.255.255.0</p>
+<p>​        3L-1(config-if)#no sh    </p>
+<p>​        第三步：配置外网接口</p>
+<p>​        3L-1(config)#int f0/2</p>
+<p>​        3L-1(config-if)#no switchport      </p>
+<p>​        3L-1(config-if)#ip add 12.1.1.1 255.255.255.0</p>
+<p>​        3L-1(config-if)#no sh</p>
+<p>​        第四步：开启路由功能</p>
+<p>​        ip  routing   </p>
+<p>1.DHCP(Dynamic Host  Configuration Protocol)动态主机配置协议，用来给客户端分配IP、子网、网关、DNS等。</p>
+<p>  DHCP使用的是UDP 67,68端口。</p>
+<p>  作用域：给客户端分配的网段。192.168.1.0/24</p>
+<p>  地址池：给客户端分配IP的范围。192.168.1.1——192.168.1.50 </p>
+<p>  保留地址：让某一个客户端总是获取相同的Ip。</p>
+<p>  排除地址：不给客户端分配的IP</p>
+<p>2.DHCP的配置：</p>
+<p>  R1(config)#do show run | s dhcp </p>
+<p>​    ip dhcp pool vlan10                                                //启用地址池，名字叫vlan10</p>
+<p>​    network 192.168.10.0 255.255.255.0                        //配置作用域为192.168.10.0/24</p>
+<p>​        dns-server 114.114.114.114                                    //给客户端使用的DNS</p>
+<p>​    default-router 192.168.10.254                            //给客户端使用的默认网关</p>
+<p>​        ip dhcp excluded-address 192.168.10.254                     //排除网关IP</p>
+<p>​        ip dhcp excluded-address 192.168.10.1 192.168.10.9   //排除一个范围(可排除亦可不排除)</p>
 <p>​    </p>
-<p>7.特权模式常用命令：</p>
-<p>  所有的show命令都可以在特权模式下直接使用；如果是其他模式，要加do。</p>
-<p>  （1）Switch#show ip interface brief  ==show  ip  int  bri   //查看所有接口的状态和配置</p>
-<p>  Status表示接口的物理状态，是否手动就行了修改；Protocol表示链路的协商状态是否正常。</p>
-<p>  说明：只有2个状态都是up的时候才是正常的。</p>
-<p>  Interface              IP-Address      OK? Method Status                Protocol</p>
-<p>​    FastEthernet0/1        unassigned      YES manual up                    up</p>
-<p> （2）show  int  f0/6     // 接口支持简写，fastethernet简写为f0/1 ;Ethernet简写为 e0/1;Gi 简写为g0/1;</p>
-<p>​       查看物理接口的双工和速率</p>
-<p>​      Full-duplex, 10Mb/s     //duplex表示双工模式，如果是Full表示全双工；如果是half表示半双工；如果是auto表示自适应。</p>
-<p> （3）修改接口的双工和速率</p>
-<p>​      enable  </p>
-<p>​      conf   t</p>
-<p>​      int   f0/1</p>
-<p>​      speed   10/100/auto        //修改接口的速率</p>
-<p>​      duplex  half/full/auto    //修改接口的双工模式</p>
-<p> （4）SW1#show   mac-address-table   //查看mac地址表，Type类型为Dynamic，表示交换机自己学到的。</p>
-<p>​      SW1#clear  mac-address-table    #清空mac地址表</p>
-<p> （5）其他命令：</p>
-<p>​    SW1#clock set 17:07:30 May 14 2019   #设置时间：时分秒，月日年</p>
-<p>​    SW1#show history    #查看命令历史</p>
-<p>​    SW1#show running-config    #查看交换机当前配置，还没有保存（重启就失效；只是写入了“内存”）(<strong>**</strong>)</p>
-<p>​    SW1#write            #保存配置</p>
-<p>​    Building configuration…</p>
-<p>​    [OK]</p>
-<p>​    SW1#copy running-config     startup-config    #把running里的配置保存到开机启动配置文件里</p>
-<p>​    SW1#show startup-config     #交换机每次开机的时候会自动加载的配置（重启仍然有效；写到了“硬盘”中，做永久存储）</p>
-<p>​    SW1#reload       #重启</p>
-<p>8.远程登录的配置：</p>
-<p>（1）设备管理——本地管理和远程管理（通过网络来管理设备，常用的方式有Telnet、SSH、远程桌面、远程协助、Team View等）</p>
-<p>（2）远程管理的步骤：</p>
-<p>​    第一步：给交换机配置IP</p>
-<p>​    SW1(config)#interface vlan 1    //进入虚拟接口；</p>
-<p>​    SW1(config-if)#ip address 192.168.1.100 255.255.255.0     //配置IP</p>
-<p>​    SW1(config-if)#no sh        //激活接口 no shutdown</p>
-<p>​    第二步：配置telnet</p>
-<p>​    SW1(config)#line vty 0 4    #0表示第1个虚拟接口；4表示最多允许登录人数</p>
-<p>​    SW1(config-line)#password 123456      #设置远程登录的密码</p>
-<p>​    SW1(config-line)#login     #激活</p>
-<p>​    第三步：进入特权模式的密码</p>
-<p>​    SW1(config)#enable password   123456 #password表示的明文密码</p>
-<p>​    SW1(config)#enable secret  123456     #secret表示密文的密码；如果两个都存在，那么密文生效</p>
-<p>（3）给console口做安全配置===》本地的安全</p>
-<p>​    SW1(config)#line console 0 </p>
-<p>​    SW1(config-line)#exec-timeout 0 0       #设置超时时间，第一个0表示分钟；第二个0表示s；0 0 表示永不超时（仅限于实验环境）</p>
-<p>​    SW1(config-line)#password console     #设置console的登录密码</p>
-<p>​    SW1(config-line)#logging synchronous    #设置光标跟随，不让命令被日志信息打断</p>
-<p>​    SW1(config-line)#login         #激活</p>
-<p>​    SW1(config)#no ip domain-lookup        #关闭域名解析</p>
-<p>​    SW1#erase startup-config          #清空所有配置</p>
-<p>（4）其他命令</p>
-<p>​    SW1(config)#do copy r s== do  write   #保存</p>
-<p>​    Switch#show version   #查看系统版本</p>
-<p>（5）ssh配置</p>
-<p>​    开启SSH（基于本地用户进行身份验证）：</p>
-<p>​    conf t </p>
-<p>​    hostname  SW1     //设置主机名</p>
-<p>​    username  test  password  密码   //设置登录的用户名和密码</p>
-<p>​    ip domain-name  <a href="http://www.test.com" target="_blank" rel="noopener">www.test.com</a>    //配置域名，域名用来生成公钥和私钥</p>
-<p>​    crypto  key  generate  rsa        //生成一对rsa算法的公钥和私钥</p>
-<p>​    line vty 0 4</p>
-<p>​    transport  input  ssh/all</p>
-<p>​    login local</p>
-<p>​    exit</p>
-<p>​    ssh -l  test  192.168.1.254   //在模拟PC上使用ssh连接设备</p>
-<p>=============================================================================</p>
-<p>destination  目标</p>
-<p>Source       源</p>
-<p>Current     当前</p>
-<p>configuration    配置</p>
-<p>Status           状态         </p>
-<p>Protocol        协议</p>
-<p>Dynamic     动态</p>
-<p>minutes    分钟</p>
-<p>seconds    秒</p>
-<p>generate    生成</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/18/网络基础一/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="吕敏">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/1.jpg">
-    </span>
-
-     <span title="Words count in article">
-      字
-     </span>
-
-        ...
-     <span title="Reading time">
-      分钟
-     </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMin-Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/18/网络基础一/" itemprop="url">网络基础一</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-18T19:46:39+08:00">
-                2019-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time </span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-1-OSI七层模型及基础"><a href="#1-1-OSI七层模型及基础" class="headerlink" title="1.1 OSI七层模型及基础"></a>1.1 OSI七层模型及基础</h1><p>ISP:运营商，电信、移动、联通</p>
-<p>IEEE：国际电子电气工程师协会，致力于电气、电子、计算机工程和与科学有关的领域的开发和研究，在太空</p>
-<p>ISO（国际标准化组织）</p>
-<p>网络设备：交换（实现相同网段通信）和路由器（找路，实现不同网段通信）</p>
-<p>IP：标识网络中任意一台主机的位置（收发件人的地址）</p>
-<p>1.网络：两个不在同一地理位置的主机，通过传输介质和通信协议，以实现资源共享和数据传输。</p>
-<p>  （1）传输介质：</p>
-<p>  （2）通信协议：“语言”，设备之间交流使用的语言叫做“协议”</p>
-<p>  （3）资源共享：文本类、视频、音频、图片等</p>
-<p>  （4）终端：笔记本、台式机、平板、手机等</p>
-<p>2.网络的分类：按照范围分</p>
-<p>  （1）WAN（Wide Area Network）：广域网，典型代表Internet，还有VPN（虚拟私有网络–“隧道”）</p>
-<p>  （2）LAN(Local Area Network)：局域网，“内网”，比如：家庭网、企业网、园区网等</p>
-<p>  （3）MAN：城域网</p>
-<p>3.网络拓扑：是一个网络的架构描述；方便管理和查看网络结构。</p>
-<p>  星型：组网灵活、方便扩展和管理；但是中心节点一旦发生故障，就会全网瘫痪。</p>
-<p>  全网型拓扑：每个设备都和其他设备相连，任意一个节点坏掉都不影响其他设备的通信。</p>
-<p>​        缺点：成本太高。</p>
-<p>  部分网状型：有2个（或以上）性能比较好的设备来做“冗余（多余）”，防止网络故障。</p>
-<p>4.OSI七层参考模型：由ISO组织提出的OSI七层模型。</p>
-<p>  最开始的网络厂商是不兼容的，不能直接对接。</p>
-<p>  为了促进各厂商的融合，ISO组织提出了OSI（Open System Interconnection，OSI）七层模型</p>
-<p>  OSI七层就是定义了数据在传输过程中如何进行“封装”（打包）和“解封装”（拆包）</p>
-<p>  （1）物理层：定义了终端设备的传输介质。传输的是bit流。</p>
-<p>  （2）数据链路层：把bit流转换为数据帧，实现基于mac地址的寻址和转发。</p>
-<p>  （3）网络层：把数据帧转换为数据包，实现基于IP地址的寻址和转发。</p>
-<p>  （4）传输层：把数据包转换为数据段，为数据提供可靠或者不可靠的传输；为应用程序提供端到] 端 的服务。</p>
-<p>​       netstat  -an      //查看端口和连接情况</p>
-<p>  （5）会话层：用来建立、维持、管理和终止会话</p>
-<p>  （6）表示层：数据的表现形式，比如加密和压缩</p>
-<p>  （7）应用层：为用户提供服务。</p>
-<p>5.TCP/ip模型：也叫做TCP/IP协议栈。可以说是4层，也可以说是5层</p>
-<p>  4层：</p>
-<p>  网络接口层：物理层和数据链路层</p>
-<p>  网络层：把数据帧转换为数据包，实现基于IP地址的寻址和转发。</p>
-<p>  传输层：把数据包转换为数据段，为数据提供可靠或者不可靠的传输；为应用程序提供端到端的服务。</p>
-<p>  应用层：把会话、表示层和应用层合并为一层。</p>
-<p>物理层</p>
-<p>1.物理层：定义了终端设备的传输介质。传输的是bit流。</p>
-<p>  常见的物理介质：网线、光纤、同轴线缆</p>
-<p>2.以太网中的术语</p>
-<p>  （1）广播：一对多；讲课</p>
-<p>  （2）组播：一对多，只有同一组里的主机才能接收到；群聊</p>
-<p>  （3）单播：一对一</p>
-<p>  （4）全双工：同一时刻，可以同时进行发送（上传）和接收（下载），比如手机</p>
-<p>  （5）半双工：同一时刻，只能发送或者接收数据，比如对讲机</p>
-<p>  （6）单工：只能进行单向传输，比如收音机</p>
-<p>  （7）冲突域：一个冲突影响的范围就是冲突域。</p>
-<p>  （8）广播域：一个广播影响的范围就是广播域。</p>
-<p>3.同轴线缆：传输速度快，但是只有一根芯，半双工的工作模式。</p>
-<p>  应用：电视、监控等</p>
-<p>  同轴线缆：100Base-2（细线，理论上可以传输185m）和100Base-5（粗线，理论上可以传输500m）</p>
-<p>  4.光纤：单模光纤和多模光纤</p>
-<p>  单模光纤：只能传输一种光，传输距离更远</p>
-<p>  多模光纤：可以传输多种光。</p>
-<p>5.网线：在以太网中常见的传输介质，网线的理论值能传输100M。</p>
-<p>  （1）从结构上来分：屏蔽双绞线（有锡纸，适合室外布线）和非屏蔽双绞线（适合室内布线）</p>
-<p>  （2）从传输速率来分：</p>
-<p>​        CAT5:5类线，传输速率的100M（百兆以太网）</p>
-<p>​        cat6:6类线，传输速率为1000M（千兆以太网）</p>
-<p>​        CAt7:7类线或者超6类，传输速率为10G（万兆以太网）</p>
-<p>  （3）按照网线的排序：T568A和T568B</p>
-<p>​        T568B：橙白、橙、绿白、蓝、蓝白、绿、棕白、棕 </p>
-<p>​        T568B在100M以太网中，使用了4根，1,2用于发送；3,6用于接收。</p>
-<p>​        T568A是1,3对调；2,6对调；</p>
-<p>  （4）按照一根线的两端网线的连接方式：</p>
-<p>​        如果一根线的两端都是T568B，这种线叫做“直通线”——————不同种设备之间用直通线</p>
-<p>​        如果一根线一端是T568B，一端是T568A，这种线的连接方式叫做“交叉线”————同种设备之间用交叉线</p>
-<p>​        全反线，也叫做Console线，用来对设备进行配置。</p>
-<p>6.不管是什么传输介质，在传输数据的时候，信号都会出现衰减，这个时候需要使用设备来延长信号的传输距离。</p>
-<p>  物理层的设备：hub（集线器），只能识别bit流。</p>
-<p>​    由于内部是总线型结构，网络的传输效率特别低。</p>
-<p>​    hub没有学习功能；</p>
-<p>​    hub的每个接口都是一个冲突域；</p>
-<ol start="7">
-<li>带宽：单位时间内传输数据的速度</li>
-</ol>
-<p>​    默认单位：bit/s</p>
-<p>​    计算机最开始的时候只能识别0和1.每个0或1就是一个bit（位）。</p>
-<p>​    为了方便计算机读取，把每 8  bit==1 Byte（容量单位）。</p>
-<p>​    1Byte=8bit </p>
-<p>​    1KB==1024B</p>
-<p>​    1MB=1024KB</p>
-<p>​    1GB=1024MB</p>
-<p>​    1TB=1024GB</p>
-<p>​    一个2G（GB）电影，使用100M（bit/s）的带宽，需要多长时间下载完成？</p>
-<p>​    2*1024=2048MB</p>
-<p>​    100/8=12.5B/s </p>
-<p>​    2.73min</p>
-<p>1.进制：</p>
-<p>  二进制B ：  0  1</p>
-<p>  八进制O ：  0  1  2  3  4  5  6  7  </p>
-<p>  十进制D ：  0  1  2  3  4  5  6  7  8  9  </p>
-<p>  十六进制H ：0  1  2  3  4  5  6  7  8  9  A（10）   B（11）  C（12）   D（13）  E（14）  F（15） </p>
-<p>2.把1-F转换为二进制：</p>
-<p>  十六进制     二进制</p>
-<p>  0            0</p>
-<p>  1            1</p>
-<p>  2            10</p>
-<p>  3            11</p>
-<p>  4            100</p>
-<p>  5         101</p>
-<p>  6            110</p>
-<p>  7            111</p>
-<p>  8            1000</p>
-<p>  9            1001</p>
-<p>  10        1010</p>
-<p>  11        1011</p>
-<p>  12        1100</p>
-<p>  13        1101</p>
-<p>  14        1110</p>
-<p>  15        1111</p>
-<p>3.十进制转其他进制：短除法</p>
-<p>  把这几个数转换为二进制</p>
-<p>  128=10000000</p>
-<p>  192=11000000</p>
-<p>  224=11100000</p>
-<p>  240=11110000</p>
-<p>  248=11111000</p>
-<p>  252=11111100</p>
-<p>  254=11111110</p>
-<p>  255=11111111</p>
-<p>  2的0次方=1</p>
-<p>  2的1次方=2</p>
-<p>  2的2次方=4</p>
-<p>  2的3次方=8</p>
-<p>  2的4次方=16</p>
-<p>  2的5次方=32</p>
-<p>  2的6次方=64</p>
-<p>  2的7次方=128</p>
-<p>  2的8次方=256</p>
-<p>  2的9次方=512</p>
-<p>  2的10次方=1024</p>
-<p>  十进制转八进制：</p>
-<p>  479        </p>
-<p>  640    1200    </p>
-<p>  1200        2260</p>
-<p>  1024        2000</p>
-<p>  512        1000</p>
-<p>  十进制转十六进制：</p>
-<p>  1600        640</p>
-<p>  3216        C90</p>
-<p>  4801        12C1</p>
-<p>  2048        800</p>
-<p>4.其他进制转十进制：乘法</p>
-<p>  十六进制：ABC  B00  </p>
-<p>  八进制：  501  234  </p>
-<p>  二进制：  1       0    1   0    1  0  0  0 =168</p>
-<p>​            128  64  32   16   8  4  2  1    </p>
+<p>3.DHCP的4种常见报文：客户端找服务器的时候是2个广播报文；服务器回复的时候是2个单播报文。</p>
+<p> （1）Discover：发现报文，用来寻找网络中的DHCP服务器。</p>
+<p>​          Source :        0.0.0.0                PC的mac地址为源</p>
+<p>​          Destination:  255.255.255.255              全FFFF</p>
+<p> （2）Offer：提供报文，是DHCP从自己的地址池中选择一个IP地址，分配给客户端。</p>
+<p> （3）Request：请求报文，告诉网络中的其他DHCP服务器“不用再给我分配IP了”；防止IP地址冲</p>
+<p>​          突。</p>
+<p> （4）Ack：确认报文，确认客户端的Ip地址等信息，确认租约时间。</p>
+<p>4.当DHCP和客户端不在同一个网段的时候，需要配置DHCP中继代理。</p>
+<p>  PC找DHCP的时候，是通过广播报文，应该在网关接口配置DHCP中继代理。</p>
+<p>  int  vlan  10</p>
+<p>  ip    add 192.168.10.254  255.255.255.0</p>
+<p>  ip    helper-address   192.168.50.1     //告诉网关，谁是DHCP服务器</p>
+<p>​    </p>
+<p>5.DHCP的中继代理配置步骤：先解决内网的通信问题。</p>
+<p>  （1）在三层交换机的下行接口上划分vlan</p>
+<p>  （2）在三层交换机的上行接口上启用三层接口，并配置Ip</p>
+<p>  （3）在三层交换机上给PC配置网关</p>
+<p>​        vlan  10</p>
+<p>​        vlan  20</p>
+<p>​        int   vlan 10</p>
+<p>​        ip   address  192.168.10.254  255.255.255.0</p>
+<p>​        no   sh</p>
+<p>​        ip   helper-address    192.168.50.1     //配置DHCP中继代理，告诉客户端，谁是DHCP服务器</p>
+<p>​            ip  routing  </p>
+<p>​             ip  route  0.0.0.0 0.0.0.0  192.168.50.1</p>
+<p>  （4）在出口路由器配置</p>
+<p>​                第一步：配置接口IP</p>
+<p>​        第二步：配置DHCP地址池</p>
+<p>​        第三步：配置到达内网vlan的路由</p>
 <p>​            </p>
-<p>5.IP地址：分别是Ipv4和Ipv6.</p>
-<p>  （1）其中IPv4是由32位的二进制数组成，为了读写方便，用点分十进制表示。IPV4的地址空间是42亿。</p>
-<p>​       IPv6是由128位的二进制数组成，为了读写方便，用冒号分十六进制表示。</p>
-<p>  （2）IPv4中按照用途把地址分为2大类：公网地址和私网地址</p>
-<p>​        公网地址：是互联网上使用，具有全球唯一性。</p>
-<p>​        私网地址：在以太网中可以重复使用。</p>
-<p>​        10.0.0.0————10.255.255.255   子网掩码：255.0.0.0（简写10.0.0.0/8，这里的8代表子网中“1”的个数）</p>
-<p>​        172.16.0.0————172.31.255.255    子网掩码：255.255.0.0</p>
-<p>​        192.168.0.0————192.168.255.255  子网掩码：255.255.255.0</p>
-<p>  （3）IP地址的分类：</p>
-<p>​       A类：1——126，默认子网掩码是255.0.0.0；地址范围：1.0.0.0————126.255.255.255</p>
-<p>​       B类：128——191，默认子网掩码是255.255.0.0；地址范围：128.0.0.0————191.255.255.255</p>
-<p>​       C类：192——223，默认子网掩码是255.255.255.0；地址范围：192.0.0.0————223.255.255.255</p>
-<p>​       D类：224——239，用于组播</p>
-<p>​       E类：240——255，用于科研</p>
-<p>  （4）子网掩码：用来标识Ip地址中的网络位和主机位的。</p>
-<p>​       网络位：在Ip地址中，与子网掩码“1”（二进制）对应的是网络位</p>
-<p>​       主机位：在Ip地址中，与子网掩码“0”（二进制）对应的位是主机位。</p>
-<p>​       网络地址：在Ip地址中，如果“主机位”全为0，这个地址就是网络地址。====》路由器找路的时候使用</p>
-<p>​       广播地址：在Ip地址中，如果“主机位”全为1，这个地址就是广播地址。====》同一个网络中广播的时候使用</p>
-<p>​       说明：网络地址和广播地址不能直接在网络中进行配置。</p>
-<p>​       </p>
-<p>​       如何判断两个IP地址是否在同一个网段？——————网络位相同的IP地址是同一个网段（交换机）；</p>
-<p>​       </p>
-<p>​       192        .     168.      120.171</p>
-<p>​       255        .     255.      255.0</p>
-<p>​       11111111.11111111.11111111.00000000</p>
-<p>​       </p>
-<p>​        北京市昌平区二拨子   博纳电气蓝鸥科技2楼</p>
-<p>  （5）举例：</p>
-<p>​       100.1.1.2和110.24.25.20</p>
-<p>​       255.0.0.0</p>
-<p>​       99.45.67.8和99.59.58.9</p>
-<p>​       255.0.0.0         </p>
-<p>​       192.168.110.10和192.168.200.10</p>
-<p>​       255.255.255.0</p>
-<p>​       172.16.30.1和172.16.200.1</p>
-<p>​       255.255.0.0</p>
-<p>​       200.10.10.10和200.10.20.10</p>
-<p>​       255.255.255.0</p>
-<p>​        6.家用路由器的基本功能；</p>
-<p>  （1）路由的功能：为数据包寻找一条最优路径；————找路 </p>
-<p>  （2）地址转换功能：把私网地址转化为公网地址；————WAN口（宽带的用户名和密码校验成功，才会给用户分配公网Ip）</p>
-<p>  （3）DHCP功能：为客户端分配Ip/子网/网关/DNS</p>
-<p>​       </p>
-<p>​            </p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-四/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="吕敏">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/1.jpg">
-    </span>
-
-     <span title="Words count in article">
-      字
-     </span>
-
-        ...
-     <span title="Reading time">
-      分钟
-     </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMin-Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/17/Linux-四/" itemprop="url">Linux(四)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:38+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time </span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="程序安装及管理"><a href="#程序安装及管理" class="headerlink" title="程序安装及管理"></a><strong>程序安装及管理</strong></h1><p><strong>一、应用程序基础</strong></p>
-<p>将软件传到LINUX中</p>
-<p>yum install lrzsz</p>
-<p>（注意：LINUX要能连入互联网，ping <a href="http://www.qq.com" target="_blank" rel="noopener">www.qq.com）</a>/)</p>
-<p><strong>应用程序与系统命令的关系</strong></p>
-<p><strong>文件位置</strong></p>
-<p>系统命令：一般在/bin和/sbin目录中，或为Shell内部指令</p>
-<p>应用程序：通常在/usr/bin和/usr/sbin目录中</p>
-<p><strong>主要用途</strong></p>
-<p>系统命令：完成对系统的基本管理工作，例如IP配置工具</p>
-<p>应用程序：完成相对独立的其他辅助任务，例如网页浏览器</p>
-<p><strong>适用环境</strong></p>
-<p>系统命令：一般只在字符操作界面中运行</p>
-<p>应用程序：根据实际需要，有些程序可在图形界面中运行</p>
-<p><strong>运行格式</strong></p>
-<p>系统命令：一般包括命令字、命令选项和命令参数</p>
-<p>应用程序：通常没有固定的执行格式</p>
-<p><strong>典型应用程序的目录结构</strong></p>
-<p>文件类型 保存目录</p>
-<p>普通执行程序文件 /usr/bin</p>
-<p>服务器执行程序文件和管理程序文件 /usr/sbin</p>
-<p>应用程序配置文件 /etc</p>
-<p>日志文件 /var/log</p>
-<p>应用程序文档文件 /usr/share/doc</p>
-<p>应用程序手册页文件 /usr/share/man</p>
-<p><strong>常见的软件包封装类型</strong></p>
-<p>文件类型 保存目录</p>
-<p>rpm软件包 扩展名为“.rpm”</p>
-<p>deb软件包 扩展名为“.deb”</p>
-<p>源代码软件包 一般为“.tar.gz”、“.tar.bz2”等格式的压缩包，包含程序的原始代码</p>
-<p>绿色免安装的软件包 在压缩包内提供已编译好的执行程序文——解开压缩包后的文件即可直接使用</p>
-<p><strong>Centos软件包管理</strong></p>
-<p><strong>rpm软件包</strong></p>
-<p>RPM</p>
-<p>Redhat Package Manager</p>
-<p>由 Red Hat 公司提出，被众多 Linux 发行版所采用</p>
-<p>建立统一的数据库文件</p>
-<p>详细记录软件包安装、卸载等变化信息</p>
-<p>自动分析软件包依赖关系</p>
-<p>RPM 软件包</p>
-<p>软件素材参考：<a href="http://www.rpm.org/" target="_blank" rel="noopener">http://www.rpm.org</a></p>
-<p><strong>一般命名格式：</strong></p>
-<p><strong>查询已安装的 RPM 软件信息</strong></p>
-<p><strong>rpm -q[子选项] [软件名]</strong></p>
-<p><strong>常用选项</strong></p>
-<p>-qa、-qi、 -ql、 -qf、-qc、-qd</p>
-<p>Rpm –qa查询所有安装的rpm软件包</p>
-<p>Rpm –qi 查询已安装的某软件包的信息</p>
-<p>Rpm –ql查询已安装的某软件包安装路径</p>
-<p>查询未安装的 RPM 软件包文件中信息</p>
-<p>rpm - qp[子选项] RPM包文件</p>
-<p>常用选项</p>
-<p>-qpi、-qpl、-qpc、-qpd</p>
-<p>使用rpm 命令只能查询通过 RPM方式安装的软件包信息用，其他途径安装到系统中的软件包，rpm 命令将无法获取相关信息</p>
-<p><strong>安装或升级RPM 软件</strong></p>
-<p>rpm [选项] RPM包文件 …</p>
-<p>-i :在当前系统中安装一个新的RPM软件包</p>
-<p>-e:卸载指定名称的软件包</p>
-<p>-U:检查并升级系统中的某个软件包,若该软件包原来并未安装,曾等同于”-i”选项</p>
-<p>-F:检查并更新系统中的某个软件包,若该软件包原来并未安装,则放弃安装</p>
-<p>-h:在安装或升级软件包的过程中,以”#”号显示安装进度</p>
-<p>-v:显示软件安装过程中的详细信息</p>
-<p>–force:强制安装某个软件包,当需要替换已安装的软件包及文件,或者安装一个比当前使用的软件版本更旧的软件时,可以使用此选项</p>
-<p>–nodeps:在安装或升级,卸载一个软件包时,不检查与其他软件包的依赖关系</p>
-<p><strong>常用选项</strong></p>
-<p>-i、 -U、 -F</p>
-<p>安装 升级 强制</p>
-<p>-vh显示安装进度</p>
-<p>rpm -ivh 软件包</p>
-<p>卸载指定的RPM软件</p>
-<p>rpm -e 软件名</p>
-<p><strong>辅助选项</strong></p>
-<p>–force、–nodeps、-h、-v、</p>
-<p><strong>重建RPM 数据库</strong></p>
-<p>[root@localhost ~]# rpm –rebuilddb</p>
-<p>或</p>
-<p>[root@localhost ~]# rpm –initdb</p>
-<p><strong>导入验证公钥</strong></p>
-<p>root@localhost ~]# rpm –import /media/cdrom/RPM-GPG-KEY-redhat-release</p>
-<p><strong>解决软件包依赖关系方法</strong></p>
-<p>安装有依赖关系的多个软件</p>
-<p>卸载有依赖关系的多个软件</p>
-<p>忽略依赖关系</p>
-<p>结合“–nodeps”选项，但可能导致软件异常</p>
-<p><strong>源代码编译概述</strong></p>
-<p>使用源代码安装软件的优点</p>
-<p>获得最新的软件版本，及时修复bug</p>
-<p>根据用户需要，灵活定制软件功能</p>
-<p><strong>应用场合举例</strong></p>
-<p>安装较新版本的应用程序时</p>
-<p>当前安装的程序无法满足需要时</p>
-<p>需要为应用程序添加新的功能时</p>
-<p>源代码编译过程</p>
-<p><strong>二、YUM安装软件</strong></p>
-<p>YUM，Yellow dog Updater Modified</p>
-<p>基于RPM包构建的软件更新机制</p>
-<p>可以自动解决依赖关系</p>
-<p>所有软件包由集中的YUM软件仓库提供</p>
-<p><strong>软件仓库的提供方式</strong></p>
-<p>FTP服务：ftp://……</p>
-<p>HTTP服务：http://……</p>
-<p>本地目录：file:///…….</p>
-<p><strong>RPM软件包的来源</strong></p>
-<p>CentOS发布的RPM包集合</p>
-<p>第三方组织发布的RPM包集合</p>
-<p>用户自定义的RPM包集合</p>
-<p><strong>构建CentOS 7 软件仓库</strong></p>
-<p>RPM包来自CentOS 7 DVD光盘</p>
-<p>通过FTP、HTTP或本地目录提供给客户机</p>
-<p>在软件仓库中加入非官方RPM包组</p>
-<p>包括存在依赖关系的所有RPM包</p>
-<p>使用createrepo工具建立仓库数据文件</p>
-<p><strong>YUM缓存目录</strong></p>
-<p>存放下载的软件包、仓库信息等数据</p>
-<p>位于/var/cache/yum/$basearch/$releasever</p>
-<p>[root@localhost ~]# yum clean all</p>
-<p><strong>为客户机指定YUM仓库位置</strong></p>
-<p>配置文件：/etc/yum.repos.d/*.repo</p>
-<p>[root@localhost ~]# vi /etc/yum.repos.d/centos7.repo</p>
-<p>[base]</p>
-<p>name=CentOS 7.5</p>
-<p>baseurl=<a href="ftp://192.168.4.254/centos7" target="_blank" rel="noopener">ftp://192.168.4.254/centos7</a></p>
-<p>enabled=1</p>
-<p>gpgcheck=1</p>
-<p>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7</p>
-<p>[other]</p>
-<p>name=Other RPM Packages</p>
-<p>baseurl=<a href="ftp://192.168.4.254/other" target="_blank" rel="noopener">ftp://192.168.4.254/other</a></p>
-<p>enabled=1</p>
-<p>gpgcheck=0</p>
-<p><strong>直接以CentOS 7 光盘作软件仓库</strong></p>
-<ol>
-<li>将CentOS 7 光盘放入光驱</li>
-<li>指定仓库位置，URL地址为 file:///media/cdrom</li>
-</ol>
-<p>[root@localhost ~]# vi /etc/yum.repos.d/local.repo</p>
-<p>……</p>
-<p>[local]</p>
-<p>name=CnetOS 7.3</p>
-<p>baseurl=file:///media/cdrom</p>
-<p>enabled=1</p>
-<p>gpgcheck=0</p>
-<p><strong>关于yum命令</strong></p>
-<p>由软件包yum-3.4.3-150.el7.centos.noarch提供</p>
-<p>用来访问YUM仓库，查询、下载及安装、卸载软件包</p>
-<p><strong>yum的配置文件</strong></p>
-<p>基本设置：/etc/yum.conf</p>
-<p>仓库设置：/etc/yum.repos.d/*.repo</p>
-<p>日志文件：/var/log/yum.log</p>
-<p><strong>查询软件包</strong></p>
-<p>yum list [软件名]…</p>
-<p>yum info [软件名]…</p>
-<p>yum search &lt;关键词&gt;…</p>
-<p><strong>查询软件包组</strong></p>
-<p>yum grouplist [包组名]…</p>
-<p>yum groupinfo &lt;包组名&gt;…</p>
-<p><strong>安装软件</strong></p>
-<p>yum install [软件名]</p>
-<p>yum groupinstall &lt;包组名&gt;</p>
-<p><strong>升级软件</strong></p>
-<p>yum update</p>
-<p>yum groupupdate</p>
-<p><strong>卸载软件</strong></p>
-<p>yum remove &lt;软件名&gt;…</p>
-<p>yum groupremove &lt;包组名&gt;…</p>
-<p><strong>yum安装:</strong></p>
-<ol>
-<li>yum源配置文件所在位置:/etc/yum.repos.d/</li>
-</ol>
-<p>注意:此目录下有许多.repo的配置文件,可以全部移走,然后自己创建一个XXX.repo的源文件</p>
-<ol>
-<li>编辑XXX.repo的源文件</li>
-</ol>
-<p>编辑内容:</p>
-<ol>
-<li>[名字] ——-自定义</li>
-<li>Baseurl=file:///media ——定义yum源仓库为光驱的挂载点</li>
-<li>enabled=1 ——-0 :关闭源 1表示开启源</li>
-<li>Gpgcheck=0 ——0:不去校验包 1:校验包 效率低</li>
-<li>保存退出</li>
-<li>安装命令</li>
-</ol>
-<p>Yum install 包名</p>
-<p><strong>源码包安装:（需要gcc）</strong></p>
-<ol>
-<li>下载源码包</li>
-<li>解压源码包</li>
-</ol>
-<p>tar zxvf 软件名.tar.gz -C /解压目录 ——–解压压缩文件到指定目录里面</p>
-<ol>
-<li>配置</li>
-</ol>
-<p>./configure –prefix=/软件放置目录 ——-重新配置软件安装后文件存放的位置</p>
-<ol>
-<li>编译</li>
-</ol>
-<p>Make ———重新编译二进制</p>
-<ol>
-<li>编译安装</li>
-</ol>
-<p>Make install ——–编译安装</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-三/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="吕敏">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/1.jpg">
-    </span>
-
-     <span title="Words count in article">
-      字
-     </span>
-
-        ...
-     <span title="Reading time">
-      分钟
-     </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMin-Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/17/Linux-三/" itemprop="url">Linux(三)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:29+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time </span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="文件操作"><a href="#文件操作" class="headerlink" title="文件操作"></a>文件操作</h1><p><strong>一、文件内容查看</strong></p>
-<p>查看文件内容 cat 命令</p>
-<p><strong>cat命令</strong></p>
-<p>用途：显示出文件的内容</p>
-<p>cat [选项] 文件名 …</p>
-<p>cat –n 文件名</p>
-<p>显示文件内容同时显示行号</p>
-<p><strong>more命令</strong></p>
-<p>用途：全屏方式分页显示文件内容</p>
-<p>交互操作方法</p>
-<p>按Enter键向下逐行滚动</p>
-<p>按空格键向下翻一屏</p>
-<p>按q键退出</p>
-<p>Ctrl+f 下翻 Ctrl+b上翻</p>
-<p>more [选项] 文件名 …</p>
-<p><strong>less 命令</strong></p>
-<p>用途：与 more 命令相同，但扩展功能更多</p>
-<p>交互操作方法</p>
-<p>Page Up 向上翻页，Page Down 向下翻页</p>
-<p>按“/”键查找内容，“n”下一个内容，“N”上一个内容</p>
-<p>其他功能与 more 命令基本类似</p>
-<p>less [选项] 文件名 …</p>
-<p><strong>tail命令</strong></p>
-<p>用途：查看文件结尾的少部分内容（默认为10行）</p>
-<p>tail -n 文件名 …</p>
-<p>显示尾部指定行数</p>
-<p>tail -f 文件名：动态观察文件变化</p>
-<p><strong>wc命令</strong></p>
-<p>用途：统计文件中的单词数量（Word Count）等信息</p>
-<p>常用命令选项</p>
-<p>-l：统计行数</p>
-<p>-w：统计单词个数</p>
-<p>-c：统计字节数</p>
-<p>wc [选项]… 目标文件…</p>
-<p>wc -l /etc/passwd</p>
-<p>wc -l /var/log/secure</p>
-<p><strong>grep命令（支持正则表达式）</strong></p>
-<p>用途：在文件中查找并显示包含指定字符串的行</p>
-<p>常用命令选项</p>
-<p>-i：查找时忽略大小写</p>
-<p>-v：反转查找，输出与查找条件不相符的行</p>
-<p>查找条件设置</p>
-<p>要查找的字符串以双引号括起来</p>
-<p>“^……”表示以……开头，“……$”表示以……结尾</p>
-<p>“^$”表示空行</p>
-<p>grep [选项]… 查找条件 目标文件</p>
-<p>例如：grep -v “^#” /etc/yum.conf | grep -v “^$”</p>
-<p>Grep “^root” /etc/passwd</p>
-<p><strong>二、压缩命令gzip、bzip2</strong></p>
-<p><strong>gzip命令、bzip2命令</strong></p>
-<p>用途：制作压缩文件、解开压缩文件</p>
-<p>常用命令选项</p>
-<p>-9、-d</p>
-<p>gzip [-9] 文件名… ——gzip工具压缩文件</p>
-<p>bzip2 [-9] 文件名…—–bzip2工具压缩文件</p>
-<p>gzip -d .gz格式的压缩文件 ——gzip工具解压文件</p>
-<p>bzip2 -d .bz2格式的压缩文件——bzip2工具解压文件</p>
-<p>请注意：</p>
-<p>gzip和bzip2命令使用的压缩算法各不相同</p>
-<p>一般来说bzip2的压缩效率要好一些</p>
-<p>gunzip 命令</p>
-<p>gunzip 等价于 gzip –d</p>
-<p>gzip -d mkfile.gz</p>
-<p>或</p>
-<p>gunzip mkfile.gz</p>
-<p>bunzip2 命令</p>
-<p>bzip2和bunzip2命令的用法与gzip、gunzip命令基本相同</p>
-<p><strong>tar命令</strong></p>
-<p>用途：制作归档文件、释放归档文件</p>
-<p>tar [选项] … 归档文件名 源文件或目录</p>
-<p>tar [选项]… 归档文件名 [-C 目标目录]</p>
-<p>常用命令选项</p>
-<p>-c、-x、-v、-f、-p、-t、 -C、-z、-j</p>
-<p>-c:创建.tar格式包文件</p>
-<p>-C:解压时指定释放的目标文件夹</p>
-<p>-f:表示使用归档</p>
-<p>-j:调用bzip2程序进行压缩或是解压</p>
-<p>-p:打包时保留文件及目录的权限</p>
-<p>-P:打包时保留文件及目录的绝对路径</p>
-<p>-t:列表查看包内的文件</p>
-<p>-v:输出详细信息</p>
-<p>-x:解压tar格式的包文件</p>
-<p>-z:调用gzip程序进行压缩或是解压</p>
-<p>压缩归档:</p>
-<p>Tar zcvf 自定义压缩后的文件名.tar.gz 压缩的对象</p>
-<p>Tar jcvf 自定义压缩后的文件名.tar.bzip2 压缩的 对象</p>
-<p>解压:</p>
-<p>Tar zxfv 压缩文件.tar.gz -C 解压后存放的目录</p>
-<p>Tar jxvf 压缩文件.tar.bzip2 -C 解压后存放的目录</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-二/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="吕敏">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/1.jpg">
-    </span>
-
-     <span title="Words count in article">
-      字
-     </span>
-
-        ...
-     <span title="Reading time">
-      分钟
-     </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMin-Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/17/Linux-二/" itemprop="url">Linux(二)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:20+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time </span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="文本编辑器-vi-命令"><a href="#文本编辑器-vi-命令" class="headerlink" title="文本编辑器 vi 命令"></a>文本编辑器 vi 命令</h1><p><strong>一、文件内容编辑</strong></p>
-<p><strong>文本编辑器的作用</strong></p>
-<p>创建或修改文本文件</p>
-<p>维护 Linux 系统中的各种配置文件</p>
-<p><strong>Linux中最常用的文本编辑器</strong></p>
-<p>vi：类UNIX操作系统的默认文本编辑器。</p>
-<p>vim：vim是vi文本编辑器（一般简称为vi编辑器）的增强版本</p>
-<p>vi vim</p>
-<p><strong>三种工作模式</strong></p>
-<p>命令模式、输入模式、末行模式</p>
-<p>不同模式之间的切换</p>
-<p>I插入式</p>
-<p>a追加式</p>
-<p>o插入新行后进行编辑</p>
-<p><strong>命令模式的基本操作</strong></p>
-<p>光标移动</p>
-<p>复制、粘贴、删除</p>
-<p>文件内容查找</p>
-<p>撤销编辑及保存退出</p>
-<p><strong>末行模式的基本操作</strong></p>
-<p>保存文件及退出vi编辑器</p>
-<p>打开新文件或读入其他文件内容</p>
-<p>文件内容替换</p>
-<p>vim kernel.txt</p>
-<p>(1)====&gt;命令模式:可以显示行号(:set nu ),可以查找信息(/word).支持上下左右键;</p>
-<p>跳到行首^</p>
-<p>跳到行尾$</p>
-<p>跳到文档最开始:gg</p>
-<p>跳到文档结尾:G</p>
-<p>跳到某一行:10 //跳到第10行.</p>
-<p>yy //复制光标所在行</p>
-<p>p //粘贴到光标所在行的下一行</p>
-<p>dd //删除光标所在行</p>
-<p>5yy //复制光标所在行开始向下的一共5行</p>
-<p>d^ //删除光标所在行到行首</p>
-<p>d$ //删除光标所在行到行尾</p>
-<p>u //撤销操作</p>
-<p>(2)====&gt;命令模式=====&gt;进入编辑模式:i</p>
-<p>(3)====&gt;命令模式=====&gt;进入编辑模式:i======&gt;末行模式Esc</p>
-<p>:wq //保存并退出</p>
-<p>:q! //强制退出,不保存</p>
-<p>:set nu //显示行号</p>
-<p>/10 //查找文档中包含”10”的内容,跳转到下一个用n</p>
-<p>:w /test/test11/aaa.txt //把文件另存为aaa.txt</p>
-<p>:s/old/new/ //把光标所在行第一个old”替换为”new</p>
-<p>:s/old/new/g //把光标所在行所有的old”替换为”new</p>
-<p>:% s/old/new/g //把所有行的old”替换为”new</p>
-<p>:1,2 s/old/new/g //把第一行和第二行的old字符替换为new=====&gt;需要先执行set nu</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/17/Linux-一/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="吕敏">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/1.jpg">
-    </span>
-
-     <span title="Words count in article">
-      字
-     </span>
-
-        ...
-     <span title="Reading time">
-      分钟
-     </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LvMin-Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/17/Linux-一/" itemprop="url">Linux(一)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T19:34:03+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time </span>
-                
-                <span title="Reading time">
-                  
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="linux命令"><a href="#linux命令" class="headerlink" title="linux命令"></a>linux命令</h1><p><strong>SHELL</strong></p>
-<p>文件位于/bin/bash</p>
-<p>cat /etc/shells常见的linuxshell有sh、bash、csh、tcsh、ash 其中bash shell是linux默认的shell</p>
-<p>查看系统默认shell命令 echo $SHELL</p>
-<p><strong>LINUX命令分类</strong></p>
-<p><strong>内部命令</strong></p>
-<p>集成于 Shell 解释器程序内部的一些特殊指令，也称为内建（Built-in）指令</p>
-<p>属于 Shell 的一部分</p>
-<p>没有单独对应的系统文件</p>
-<p>自动载入内存，可以直接使用</p>
-<p><strong>外部命令</strong></p>
-<p>Linux系统中能够完成特定功能的脚本文件或二进制程序</p>
-<p>属于 Shell 解释器程序之外的命令</p>
-<p>每个外部命令对应了系统中的一个文件</p>
-<p>必须知道其对应的文件位置，由 Shell 加载后才能执行</p>
-<p>注意Linux系统将存在外部命令、程序的目录默认添加到“搜索路径”中 当前使用位于这些目录中的外部命令时，用户不需要指定具体的位置。</p>
-<p>Echo $PATH</p>
-<p><strong>通用的命令行使用格式</strong></p>
-<p>命令字 【选项】 【参数】</p>
-<p><strong>命令字</strong></p>
-<p>是整条命令中最关键的一部分</p>
-<p>唯一确定一条命令</p>
-<p><strong>注意：</strong></p>
-<p>Linux命令环境中，对英文字符的处理是区分大小写的</p>
-<p><strong>选项</strong></p>
-<p>短格式选项：使用“-”符号引导</p>
-<p>多个单字符选项可以组合在一起使用 —-ls -a ls -l ls -al</p>
-<p>长格式选项：使用“–”符号引导</p>
-<p><strong>参数</strong></p>
-<p>命令字的处理对象</p>
-<p>可以是文件名、目录（路径）名或用户名等内容</p>
-<p>个数可以是零到多个</p>
-<p>编辑 Linux 命令行的辅助操作</p>
-<p><strong>Tab 键</strong></p>
-<p>反斜杠“\” —如果输入一行命令内容过长,终端会自动换行,也可以通过插入反斜杠\强制换行</p>
-<p>Ctrl＋U 快捷键 ——-快速删除光标之前的所有字符内容</p>
-<p>Ctrl＋K 快捷键—–快速删除从点前光标处到行尾的所有字符</p>
-<p>Ctrl＋L 快捷键—–快速清空屏幕显示</p>
-<p>Ctrl＋C 快捷键—-取消当前命令</p>
-<p><strong>如何获得命令帮助</strong></p>
-<p><strong>问题</strong></p>
-<p>如何能快速、正确使用命令完成操作？</p>
-<p><strong>取得帮助方法</strong></p>
-<p>使用help 命令</p>
-<p>Help pwd</p>
-<p>使用“–help”选项</p>
-<p>使用man 手册页 (pageup pagedown翻页 q退出)</p>
-<p>help:大多数GNU工具都有–help 选项，用来显示工具的一些信息，用法</p>
-<p>man:–(manual)显示系统的手册页,也就是查看帮助文档，如果系统没有文档，是不会显示这些帮助信息的，比help要详细</p>
-<p>info:是一个基于菜单的超文本系统，是由GNU项目开发并由Linux发布，包括一些关于Linux Shell，工具，GNU项目开发程序说明文档,不但显示一些选项，还会有一些范例</p>
-<p>注:一般man用的比较多，比help细，比info简单</p>
-<p><strong>目录和文件基本操作</strong></p>
-<p>pwd 命令</p>
-<p>cd 命令</p>
-<p>ls 命令</p>
-<p>du 命令</p>
-<p><strong>显示当前的工作目录</strong></p>
-<p>Pwd</p>
-<p><strong>将用户的工作目录更改到其他位置</strong></p>
-<p><strong>格式</strong></p>
-<p>cd 目标位置</p>
-<p>cd ~</p>
-<p>cd</p>
-<p>cd -</p>
-<p><strong>说明</strong></p>
-<p>切换到目标位置</p>
-<p>若不指定目标位置，切换到当前用户的宿主目录</p>
-<p>切换到上一次执行 cd 命令之前所在的目录</p>
-<p><strong>目录操作</strong></p>
-<p>绝对目录：从根目录开始的路径表示方式</p>
-<p>相对目录：从当前目录开始的路径表示方式</p>
-<p>示例：cd .. 相对路径表示法进入上级目录。</p>
-<p><strong>显示目录中内容，包括子目录和文件相关属性信息</strong></p>
-<p>ls [选项] [文件或目录… ]</p>
-<p>ls –l</p>
-<p><strong>标志</strong></p>
-<p>d代表目录</p>
-<p>-代表文件</p>
-<p>l代表链接</p>
-<p>ls –a 连同显示隐藏文件，以.开头的文件或目录</p>
-<p>ls –d 显示目录本身的信息</p>
-<p>ls –h 以友好的表示方式显示信息</p>
-<p><strong>常用选项</strong></p>
-<p>-l 、 -a 、 -A 、 -d 、 -h 、 -g 、 –color</p>
-<p><strong>结合通配符</strong></p>
-<p>“?”：匹配文件名中的一个未知字符</p>
-<p>“*”：匹配文件名中的任意多个字符</p>
-<p>ls –color —在字符模式中颜色区分文件类型</p>
-<p>深蓝色—-目录</p>
-<p>白色——-文件</p>
-<p>绿色—-可执行文件</p>
-<p>黄色—设备文件</p>
-<p>红色——压缩文件</p>
-<p><strong>通过别名机制简化常用的、比较长的命令</strong></p>
-<p>alias 命令别名 = 命令</p>
-<p><strong>设置myls 为ls – alh 的别名</strong></p>
-<p>alias myls = ‘ls – alh’</p>
-<p>永久保存定义别名的方式</p>
-<p>编辑 ~/.bashrc —–个人配置文件</p>
-<p>/etc/bashrc —–全局配置文件</p>
-<p>alias la=’ls -a -l’</p>
-<p><strong>统计指定目录（或文件）所占用磁盘空间的大小</strong></p>
-<p><strong>du [选项] [文件或目录… ]</strong></p>
-<p>选项</p>
-<p>-a</p>
-<p>-h</p>
-<p>-s</p>
-<p>示例</p>
-<p>统计磁盘空间占用时包括所有的文件，而不仅仅只统计目录</p>
-<p>显示出目录或文件的大小（K、M），默认的大小单位为字节（KB）</p>
-<p>只统计每个参数所占用空间总的大小，而不是统计每个子目录、文件的大小</p>
-<p>df –h显示剩余磁盘空间</p>
-<p><strong>mkdir 创建新的空目录</strong></p>
-<p><strong>rmdir 删除一个目录</strong></p>
-<p><strong>mkdir [选项] 目录位置及名称</strong></p>
-<p>-p：一次性创建嵌套的多层目录</p>
-<p>Rmdir删除子目录时，必须是空的。</p>
-<p><strong>创建空文件 – touch</strong></p>
-<p>更新文件的时间标记</p>
-<p>经常用于创建多个新的空文件</p>
-<p>touch 文件…</p>
-<p><strong>创建链接文件 – ln</strong></p>
-<p>为文件或目录建立链接文件</p>
-<p>文件类型</p>
-<p><strong>软链接，又称符号链接（理解为快捷方式）</strong></p>
-<p><strong>硬链接ln [-s] 源文件或目录… 链接文件或目标位置</strong></p>
-<p> 软链接-s 硬链接</p>
-<p>删除原始文件后 失效 仍旧可用</p>
-<p>使用范围 适用于文件或目录 只可用于文件</p>
-<p>保存位置 与原始文件可以位于不同的文件系统中 必须与原始文件在同一个文件系统（如一个Linux分区）内</p>
-<p><strong>取消软链接</strong></p>
-<p>Unlink 链接名</p>
-<p>如：unlink aa1.txt</p>
-<p>查找指定inode号的硬链接文件</p>
-<p>ll –i</p>
-<p>find / -inum 16810953</p>
-<p><strong>将需要复制的文件或目录（源）重建一份，并保存为新的文件或目录</strong></p>
-<p><strong>cp [选项]… 源文件或目录… 目标文件或目录…</strong></p>
-<p>选项 说明</p>
-<p>-f 覆盖目标同名文件或目录时不进行提醒，直接强制复制</p>
-<p>-i 覆盖目标同名文件或目录时提醒用户确认</p>
-<p>-p 复制时保持源文件的权限、属主及时间标记等属性不变</p>
-<p>-r 复制目录时必须使用此选项，表示递归复制所有文件及子目录</p>
-<p>注意：</p>
-<p>复制多个文件或目录时，目标位置必须是目录，且目标目录必须已存在</p>
-<p>复制文件的样式</p>
-<p>Cp 文件名 子目录中</p>
-<p>如：cd /root</p>
-<p>cp initial-setup-ks.cfg a1</p>
-<p>cp 文件名 新文件名</p>
-<p>在当前目录复制出一个新文件</p>
-<p>支持通配符*？</p>
-<p>复制一个目录及里面所有文件到另一个目录中</p>
-<p>Cp –r b3 b34</p>
-<p><strong>删除指定的文件或目录</strong></p>
-<p>rm [选项] 要删除的文件或目录…</p>
-<p><strong>常用选项</strong></p>
-<p>-f(强制)、-i（友好提示）、-r（连同子目录）</p>
-<p><strong>其中rf可以组合使用</strong></p>
-<p><strong>猜一猜：下面命令实现的功能</strong></p>
-<p>rm -rf public_html/grub/</p>
-<p>rm -i public_html/apg.conf</p>
-<p>注意：</p>
-<p>不要直接删除系统中已有的目录或配置文件，以避免出现意外故障</p>
-<p><strong>移动文件或目录mv</strong></p>
-<p>mv [选项] … 源文件或目录… 目标文件或目录</p>
-<p>将指定的文件或目录转移位置</p>
-<p>如果目标位置 与源位置相同，则相当于执行重命名操作</p>
-<p>mv mytouch mkfile</p>
-<p>mv mkfile public_html/</p>
-<p><strong>查找命令/文件存放目录</strong></p>
-<p>搜索范围由环境变量 PATH 决定（echo $PATH ）</p>
-<p>which 命令|程序名</p>
-<p>which -a 命令|程序名</p>
-<p><strong>查找文件或目录-find</strong></p>
-<p>采用递归方式，根据目标的名称、类型、大小等不同属性进行精细查找</p>
-<p>find [查找范围] [查找条件表达式]</p>
-<p>查找类型 关键字 说明</p>
-<p>按名称查找 -name 根据目标文件的名称进行查找，允许使用“<em>”及“?”通配符</em></p>
-<p><em>find / -name “</em>.txt” -print #在当前目录中中查.txt文件并显示</p>
-<p>find . -name “[A-Z]*” -print #在当前目录中查以大写字母开头的文件并显示</p>
-<p>按文件大小查找 -size 根据目标文件的大小进行查找</p>
-<p>一般使用“＋”、“-”号设置超过或小于指定的大小作为查找条件</p>
-<p>常用的容量单位包括 kB（注意 k 是小写）、M、G</p>
-<p>find . -type f -empty #查找大小为0的文件或空目录</p>
-<p>find . -type f -size +1000000c -print #查长度大于1Mb的文件</p>
-<p>find . -type f -size +2k#搜索当前目录下大于2KB的文件</p>
-<p>按文件属主查找 -user 根据文件是否属于目标用户进行查找</p>
-<p>按文件类型查找 - type 根据文件的类型进行查找</p>
-<p>文件类型包括普通文件（f）、目录（d）、块设备文件（b）、字符设备文件（c）等 块设备是指成块读取数据的设备（如硬盘、内存等），字符设备是指按单个字符读取数据的设备（如键盘、鼠标等）</p>
-<p>find . -type d -print #只列出当前目录所有的子目录</p>
-<p>find . ! -type d -print #只列出当前目录的非子目录（文件）</p>
-<p>find . -type f -print #只列出当前目录所有的文件</p>
-<p>find . -type l -print #只列出当前目录的所有符号链接</p>
-<p>find . -type c -print #只列出当前目录的所有字符设备</p>
-<p>find . -type b -print #只列出当前目录的所有块设备</p>
-<p>find . -type s -print #只列出当前目录的所有套接字</p>
-<p>find . -type p -print #只列出当前目录的所有Fifo</p>
-<p>扩展 Xargs find . -type d -empty | xargs rmdir #删除当前目录下所有空文件夹</p>
-<p>find . -type f -empty | xargs rm -rf递归查找当前目录及子目录下所有空文件并删除，rm 的 -r参数表示递归，-f表示强制删除</p>
-<p>find . -name “*.txt” | xargs rm -rf #查找当前目录下所有.txt文件并删除</p>
-<p>例如：</p>
-<p>find . -type f -atime +10 -name “<em>.txt” -exec cp {} /data ; #找到10天前访问的.txt文件并复制到/data目录中</em></p>
-<p><em>find . -perm -007 -exec ls -l {} ; #查所有用户都可读写执行的文件同-perm 777</em></p>
-<p><em>find . -type f -user root -exec chown ubuntu {} ; 　#将当前目录下所有root的文件改为属于ubuntu</em></p>
-<p><em>find /haha -name “grep.txt” -exec rm -rf {}</em></p>
-<p><em>find . -name ap</em> -o -name may* #查找以ap或may开头的文件</p>
-<p>find / -name “aa*.log” –ls</p>
-<p>find / -size +100M –ls</p>
-<p>find /etc -size -10k -ls</p>
-<p>find / -user abc -ls</p>
-<p>find /root/b35 -type f -ls</p>
-<p><strong>各表达式之间使用逻辑运算符</strong></p>
-<p>“-a”表示 而且（and）</p>
-<p>“-o”表示 或者（or）</p>
-<p>find /boot -size +1024k -a -name “vmlinuz<em>“</em></p>
-<p><em>find /boot -size +1024k -o -name “vmlinuz</em>“</p>
-<p><strong>知识梳理</strong></p>
-<p>查看及切换目录（pwd、cd、ls、du、df）</p>
-<p>创建目录和文件（mkdir、touch、ln）</p>
-<p>复制、删除、移动目录和文件（cp、rm、mv）</p>
-<p>查找目录和文件（which、find）</p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
+<p>​    </p>
 
           
         
@@ -3056,6 +2740,10 @@
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -3101,7 +2789,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -3114,7 +2802,7 @@
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">tags</span>
                 
               </div>

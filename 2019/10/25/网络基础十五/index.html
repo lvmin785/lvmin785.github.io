@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="OSPF,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.15OSPF1.路由协议分类：   动态和静态 ​      AS：自治系统，根据路由协议是否工作在一个AS中，把路由协议分为IGP和EGP。（  划分AS   ​               的原因：不同的路由协议有一个极限值；方便管理。） ​      IGP：内部网关协议，同一个AS内部使用； ​      EGP：外网网关协议，不同的AS之间通信。代表BGP。 ​      动态路由协">
+<meta name="keywords" content="OSPF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络基础十五">
+<meta property="og:url" content="blog.shenzihao.top/2019/10/25/网络基础十五/index.html">
+<meta property="og:site_name" content="LvMin-Blog">
+<meta property="og:description" content="1.15OSPF1.路由协议分类：   动态和静态 ​      AS：自治系统，根据路由协议是否工作在一个AS中，把路由协议分为IGP和EGP。（  划分AS   ​               的原因：不同的路由协议有一个极限值；方便管理。） ​      IGP：内部网关协议，同一个AS内部使用； ​      EGP：外网网关协议，不同的AS之间通信。代表BGP。 ​      动态路由协">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-25T07:21:58.946Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络基础十五">
+<meta name="twitter:description" content="1.15OSPF1.路由协议分类：   动态和静态 ​      AS：自治系统，根据路由协议是否工作在一个AS中，把路由协议分为IGP和EGP。（  划分AS   ​               的原因：不同的路由协议有一个极限值；方便管理。） ​      IGP：内部网关协议，同一个AS内部使用； ​      EGP：外网网关协议，不同的AS之间通信。代表BGP。 ​      动态路由协">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="blog.shenzihao.top/2019/10/25/网络基础十五/">
+
+
+
+
+
+  <title>网络基础十五 | LvMin-Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">LvMin-Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">网络安全</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="blog.shenzihao.top/2019/10/25/网络基础十五/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="吕敏">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/1.jpg">
+    </span>
+
+     <span title="Words count in article">
+      字
+     </span>
+
+        ...
+     <span title="Reading time">
+      分钟
+     </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LvMin-Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网络基础十五</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-25T14:57:35+08:00">
+                2019-10-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time </span>
+                
+                <span title="Reading time">
+                  
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-15OSPF"><a href="#1-15OSPF" class="headerlink" title="1.15OSPF"></a>1.15OSPF</h1><p>1.路由协议分类：</p>
+<p>  动态和静态</p>
+<p>​      AS：自治系统，根据路由协议是否工作在一个AS中，把路由协议分为IGP和EGP。（  划分AS  </p>
+<p>​               的原因：不同的路由协议有一个极限值；方便管理。）</p>
+<p>​      IGP：内部网关协议，同一个AS内部使用；</p>
+<p>​      EGP：外网网关协议，不同的AS之间通信。代表BGP。</p>
+<p>​      动态路由协议：</p>
+<p>​      距离矢量路由协议:rip,每个路由器没有全网拓扑，只能从邻居收到路由信息。（适用于小型</p>
+<p>​                网络）</p>
+<p>​        链路状态路由协议:ospf，is-is每个路由器都有全网拓扑，自己根据自己的数据库计算出来</p>
+<p>​                最优路径。</p>
+<p>2.OSPF的基本概念：是链路状态路由协议的典型代表，是公有协议；适用于大中型网络。</p>
+<p>  （1）OSPF（Open Shortest  Path First）开放式最短路径优先，每个路由器以自己为根会计算出来  </p>
+<p>​           一个“无环”的最优路径。</p>
+<p>​           组播地址：224.0.0.5和224.0.0.6</p>
+<p>​           ospf的管理距离（优先级）是110；rip的管理距离是120；</p>
+<p>​          hello时间是10s；dead时间是40s；</p>
+<p>​          更新：组播更新；</p>
+<p>​          支持VLSM（支持无类的路由协议）；</p>
+<p>​          支持认证；</p>
+<p>​          支持区域划分；</p>
+<p>  （2）OSPF的度量值为COST，参考带宽是100M。</p>
+<p>​            COST= 108/BW（b/s）</p>
+<p>​        最短路径是基于接口指定的代价（cost）计算的</p>
+<p>  （3）LSDB：链路状态数据库；</p>
+<p>​             LSA：链路状态通告（基本信息）  </p>
+<p>  （4）Router-id：路由器唯一标识，用来标识每个路由器的身份。</p>
+<p>​           选举规则：</p>
+<p>​           手工指定的优先级最高；</p>
+<p>​           回还口IP地址最大；</p>
+<p>​           物理接口Ip地址最大；</p>
+<p>3.OSPf中有3张表</p>
+<p>  （1）邻居表：通过发送hello，寻找网络中的其他邻居。</p>
+<p>  （2）链路状态数据库（LSDB：link State  Database）：交互LSA，形成LSDB。</p>
+<p>​            LSA（Link State Advertisement）：链路状态通告（路由的基本信息），描述每个路由器的基</p>
+<p>​            本接口信息、网络类型和IP地址等。</p>
+<p>  （3）路由表：使用的是SPF算法，根据LSDB中的信息计算最优路由。  </p>
+<p>5.OSPF的5种包：</p>
+<p>  （1）hello：发送hello，建立和维持邻居关系。</p>
+<p>  （2）DBD：Database Description数据库描述，类似于菜单/目录。</p>
+<p>  （3）LSR：Link State Request，链路状态请求，请求自己没有的LSA条目。===》点你喜欢吃的</p>
+<p>​           菜。</p>
+<p>  （4）LSU：Link State Update，链路状态更新，响应LSR。=====》服务员给你确认一下菜单</p>
+<p>  （5）LSACK：Link State Acknowledge，链路状态确认，响应LSR和LSU。    </p>
+<p>   说明：LSA不是一种数据包，而是数据包里的条目。（菜单里的某个菜名） </p>
+<p>7.OSPF的7种状态机：</p>
+<h2 id="邻居关系：只交互Hello"><a href="#邻居关系：只交互Hello" class="headerlink" title="邻居关系：只交互Hello"></a>邻居关系：只交互Hello</h2><p>  （1）Down状态：开始发送hello，但是没有发现网络中有任何其他路由器；或者接口直接处于故障</p>
+<p>​           状态。</p>
+<p>  （2）Init状态：从邻居收到了hello包，但是hello包中没有自己的Router-id。建立了单向的邻居关</p>
+<p>​           系。</p>
+<p>  （3）2-Way状态：从邻居收到的hello里，包含了自己的Router-id。</p>
+<h2 id="邻接关系：交互LSA"><a href="#邻接关系：交互LSA" class="headerlink" title="邻接关系：交互LSA"></a>邻接关系：交互LSA</h2><p>  （4）Exstart状态：交互DBD报文，用于选举主从（为了决定哪个路由器先发送DBD报文；一般只有</p>
+<p>​           3个包左右）</p>
+<p>  （5）Exchange；大量的DBD报文开始交互。====》翻菜单</p>
+<p>  （6）Loading：交互LSR、LSU、LSACK。====》LSR（你点菜），LSU（点菜宝），LSACK（报</p>
+<p>​          全部的菜名）</p>
+<p>  （7）Full：交互完成===》菜齐了。</p>
+<p>  8.ospf中划分区域的意义</p>
+<p>  （1）防止过多的LSA对硬件资源的消耗；</p>
+<p>  （2）在大型网络中，如果一条链路发生故障，会导致全网进行收敛。</p>
+<p>  （3）解决方法：进行区域划分</p>
+<p>​       区域ID：区域唯一标识，可以用十进制数表示；也可以用IP地址的形式表示。</p>
+<p>​       区域分为2大类：</p>
+<p>​       骨干区域，只有一个编号，就是area 0；非骨干区域之间通信，必须要经过骨干区域。</p>
+<p>​       非骨干区域，编号是任何的非0的区域。</p>
+<p>  9.ospf的基本配置：</p>
+<p>  （1）基本配置：</p>
+<p>​     router ospf 110    //110表示ospf的进程号，本地有效；不会影响邻居建立</p>
+<p>​     router-id 22.1.1.1        //指定路由器的唯一标识：Router-id </p>
+<p>​     network 22.1.1.0 0.0.0.255 area 0   //宣告自己的直连网段+反掩码（必须是连续的0或1）+区</p>
+<p>​     域ID</p>
+<p>​     network 23.1.1.0 0.0.0.255 area 0</p>
+<p>  （2）3张表：</p>
+<p>​     R2#show ip ospf neighbor    //邻居关系表</p>
+<p>​    邻居的Router-id    优先级  状态，full邻接  死亡时间    邻居的接口Ip   自己和邻接相连的接口</p>
+<p>​    Neighbor ID         Pri           State           Dead Time   Address         Interface</p>
+<p>​    33.1.1.1              1           FULL/DR         00:00:30    23.1.1.2        FastEthernet0/1</p>
+<p>  R2#show ip ospf database    //查看链路状态数据库</p>
+<p>  R2#show ip route    //如果是o开头的（域内路由）表示从同一个区域学到的路由条目；</p>
+<p>  //如果是O IA（域间路由）表示从其他区域学到的路由。</p>
+<p>  O        34.1.1.0 [110/2] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>​      44.0.0.0/32 is subnetted, 1 subnets</p>
+<p>  O        44.1.1.1 [110/3] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>​      45.0.0.0/24 is subnetted, 1 subnets</p>
+<p>  O IA     45.1.1.0 [110/3] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>​      55.0.0.0/32 is subnetted, 1 subnets</p>
+<p>  O IA     55.1.1.1 [110/4] via 23.1.1.2, 00:01:28, FastEthernet0/1</p>
+<p>10.OSPF中的网络类型：</p>
+<p>  point to Point：点到点，代表接口是Serial口</p>
+<p>  Broadcast Multi Access：广播型多路访问，代表接口是g0/0,f0/0,e0/0</p>
+<p>11.在MA网络中，为了避免过多的邻接关系和重复的路由信息传递，要在MA网络中选举DR和BDR。</p>
+<p>  （1）DR和BDR的选举依据：DR和BDR是基于接口的概念。一个路由器的不同接口可能属于不同的角色。</p>
+<p>​       先比较优先级；优先级范围是0～255，数值越大，优先级越高，默认为1</p>
+<p>​       比较Router-id（手工指定；回还口最大；物理接口Ip地址最大；）</p>
+<p>​       说明：如果接口的优先级为0，就表示这个接口不参与DR/BDR的选举；==》DRother。       </p>
+<p>  （2）关系：</p>
+<p>​       DR和BDR之间：邻接关系====》Full（邻接关系表示交互LSA，可以交互路由条目==》交作业）</p>
+<p>​       DR/BDR与DRother之间：邻接关系====》Full</p>
+<p>​       DRother之间：邻居关系====》2-way状态（只交互hello，不交互路由信息）</p>
+<p>  （3）DR和BDR一旦选举完成，不具备“抢占性”====》为了保证网络的稳定性。</p>
+<p>​       如果DR  Down掉，由BDR接替DR的工作；</p>
+<p>​       继续在DRother中选举一个BDR；</p>
+<p>​       如果原始的DR即便恢复正常，也只能当DRother；</p>
+<p>  （4）选举期：在MA网络中，选举时间是40s；在选举期内正常根据选举依据进行选举；</p>
+<p>​       一旦选举完成，就不能再更改====》非选举期内，不再选举。</p>
+<p>  （5）调整接口优先级：</p>
+<p>​       R8(config)#int f0/0</p>
+<p>​       R8(config-if)#ip ospf priority 100  </p>
+<p>  （6）DRother监听组播地址224.0.0.5</p>
+<p>​       DR、BDR监听2个组播地址224.0.0.5和224.0.0.6；</p>
+<p>​       当DRother想把路由信息传递给DR/BDR时，目标地址是224.0.0.6（上交）</p>
+<p>​       当DR、BDR通告路由信息的时候，目标地址是224.0.0.5（下发）</p>
+<p>  （7）清除ospf进程的命令：</p>
+<p>​       clear  ip ospf  process  ===&gt;输入yes；</p>
+<p>​       </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OSPF/" rel="tag"># OSPF</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/25/网络基础十四/" rel="next" title="网络基础十四">
+                <i class="fa fa-chevron-left"></i> 网络基础十四
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/25/网络基础十六/" rel="prev" title="网络基础十六">
+                网络基础十六 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/1.jpg" alt="吕敏">
+            
+              <p class="site-author-name" itemprop="name">吕敏</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-15OSPF"><span class="nav-number">1.</span> <span class="nav-text">1.15OSPF</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#邻居关系：只交互Hello"><span class="nav-number">1.1.</span> <span class="nav-text">邻居关系：只交互Hello</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#邻接关系：交互LSA"><span class="nav-number">1.2.</span> <span class="nav-text">邻接关系：交互LSA</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">吕敏</span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count"></span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+  
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
